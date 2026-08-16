@@ -62,10 +62,10 @@
 
     .q-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.85rem; color: var(--cyan); }
     .q-title { font-size: 1.05rem; font-weight: 800; line-height: 1.4; color: #fff; min-height: 3rem; }
-    .opts-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+    .opts-grid { display: flex; flex-direction: column; gap: 0.65rem; }
     .opt-btn {
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px; padding: 0.9rem 1rem; color: #fff; font-weight: 700; font-size: 0.95rem;
+      border-radius: 12px; padding: 0.8rem 1rem; color: #fff; font-weight: 700; font-size: 0.9rem;
       text-align: left; cursor: pointer; transition: all 0.2s;
     }
     .opt-btn:hover:not(:disabled) { background: rgba(56, 189, 248, 0.12); border-color: var(--cyan); }
@@ -192,85 +192,151 @@
       { 
         gen: 1, round: 1, qNum: "1/11", 
         q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent in a pedigree chart?", 
-        opts: ["A. Square = Male | Circle = Female", "B. Circle = Male | Square = Female", "C. Square = Affected | Circle = Carrier"], 
-        ans: "A" 
+        opts: [
+          "Square = Male | Circle = Female", 
+          "Circle = Male | Square = Female", 
+          "Square = Affected | Circle = Carrier",
+          "Square = Deceased | Circle = Alive"
+        ], 
+        ans: "Square = Male | Circle = Female" 
       },
       { 
         gen: 1, round: 1, qNum: "2/11", 
         q: "R1-Q2 [Gen I]: What does a shaded symbol mean in a standard pedigree?", 
-        opts: ["A. Deceased individual", "B. Affected by the genetic trait/condition", "C. Unaffected carrier only"], 
-        ans: "B" 
+        opts: [
+          "Deceased individual", 
+          "Affected by the genetic trait/condition", 
+          "Unaffected carrier only",
+          "Adopted individual"
+        ], 
+        ans: "Affected by the genetic trait/condition" 
       },
 
       // --- ROUND 2 (3 Questions) ---
       { 
         gen: 2, round: 2, qNum: "3/11", 
         q: "R2-Q1 [Gen II]: Gen II Son 1 is shaded blue (ff). What MUST be the genotypes of unshaded parents in Gen I?", 
-        opts: ["A. Both are Heterozygous (Ff)", "B. Both are Homozygous Dominant (FF)", "C. One is (FF), One is (ff)"], 
-        ans: "A" 
+        opts: [
+          "Both are Heterozygous (Ff)", 
+          "Both are Homozygous Dominant (FF)", 
+          "One is (FF), One is (ff)",
+          "Both are Homozygous Recessive (ff)"
+        ], 
+        ans: "Both are Heterozygous (Ff)" 
       },
       { 
         gen: 2, round: 2, qNum: "4/11", 
         q: "R2-Q2 [Gen II]: Gen II Daughter is unshaded. Knowing her parents are Ff x Ff, what is her possible genotype?", 
-        opts: ["A. Must be ff", "B. Either FF or Ff", "C. Must be FF only"], 
-        ans: "B" 
+        opts: [
+          "Must be ff", 
+          "Either FF or Ff", 
+          "Must be FF only",
+          "Must be Ff only"
+        ], 
+        ans: "Either FF or Ff" 
       },
       { 
         gen: 2, round: 2, qNum: "5/11", 
         q: "R2-Q3 [Gen II]: Horizontal line connecting Gen II Daughter and her partner represents what?", 
-        opts: ["A. Identical twins", "B. Mating / Marriage", "C. Divorced lineage"], 
-        ans: "B" 
+        opts: [
+          "Identical twins", 
+          "Mating / Marriage", 
+          "Divorced lineage",
+          "Sibling connection"
+        ], 
+        ans: "Mating / Marriage" 
       },
 
       // --- ROUND 3 (2 Questions) ---
       { 
         gen: 3, round: 3, qNum: "6/11", 
         q: "R3-Q1 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", 
-        opts: ["A. 50% Chance", "B. 25% Chance", "C. 75% Chance"], 
-        ans: "A" 
+        opts: [
+          "50% Chance", 
+          "25% Chance", 
+          "75% Chance",
+          "0% Chance"
+        ], 
+        ans: "50% Chance" 
       },
       { 
         gen: 3, round: 3, qNum: "7/11", 
         q: "R3-Q2 [Gen III]: What fraction of offspring from ff x Ff will be carrier (Ff) heterozygous?", 
-        opts: ["A. 1/4 (25%)", "B. 1/2 (50%)", "C. 3/4 (75%)"], 
-        ans: "B" 
+        opts: [
+          "1/4 (25%)", 
+          "1/2 (50%)", 
+          "3/4 (75%)",
+          "4/4 (100%)"
+        ], 
+        ans: "1/2 (50%)" 
       },
 
       // --- ROUND 4 (3 Questions) ---
       { 
         gen: 4, round: 4, qNum: "8/11", 
         q: "R4-Q1 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", 
-        opts: ["A. 75% Chance", "B. 25% Chance", "C. 100% Chance"], 
-        ans: "A" 
+        opts: [
+          "75% Chance", 
+          "25% Chance", 
+          "100% Chance",
+          "50% Chance"
+        ], 
+        ans: "75% Chance" 
       },
       { 
         gen: 4, round: 4, qNum: "9/11", 
         q: "R4-Q2 [Gen IV]: What is the probability that a normal (unshaded) child of Ff x Ff is a CARRIER (Ff)?", 
-        opts: ["A. 1/2 (50%)", "B. 2/3 (~67%)", "C. 1/4 (25%)"], 
-        ans: "B" 
+        opts: [
+          "1/2 (50%)", 
+          "2/3 (~67%)", 
+          "1/4 (25%)",
+          "3/4 (75%)"
+        ], 
+        ans: "2/3 (~67%)" 
       },
       { 
         gen: 4, round: 4, qNum: "10/11", 
         q: "R4-Q3 [Gen IV]: In this 4-generation pedigree, why did the trait 'skip' Gen I phenotype-wise?", 
-        opts: ["A. Trait is recessive, carried hiddenly by Gen I (Ff)", "B. Trait mutated spontaneously in Gen II", "C. Trait is environment-driven only"], 
-        ans: "A" 
+        opts: [
+          "Trait is recessive, carried hiddenly by Gen I (Ff)", 
+          "Trait mutated spontaneously in Gen II", 
+          "Trait is environment-driven only",
+          "Trait is X-linked dominant"
+        ], 
+        ans: "Trait is recessive, carried hiddenly by Gen I (Ff)" 
       },
 
       // --- ROUND 5 (1 Harder Problem-Solving Punnett Question) ---
       { 
         gen: 4, round: 5, qNum: "11/11", 
         q: "R5-FINAL [PUNNETT CHALLENGE]: If Gen IV Daughter (ff) marries a carrier male (Ff), and they have 3 children, what is the exact probability that ALL 3 children are affected (ff)?", 
-        opts: ["A. 1/8 (12.5%)", "B. 1/4 (25%)", "C. 1/16 (6.25%)"], 
-        ans: "A" 
+        opts: [
+          "1/8 (12.5%)", 
+          "1/4 (25%)", 
+          "1/16 (6.25%)",
+          "1/2 (50%)"
+        ], 
+        ans: "1/8 (12.5%)" 
       }
     ];
 
     let teamName = "";
     let idx = 0;
-    let selectedAns = null;
+    let selectedText = null;
+    let currentShuffledOpts = [];
     let timeLeft = 300; // 5 minutes in seconds
     let timerInterval = null;
     let isLocked = false;
+
+    // Helper function to shuffle an array randomly
+    function shuffleArray(array) {
+      let arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
     function startSession() {
       teamName = document.getElementById('teamInput').value.trim();
@@ -303,8 +369,28 @@
       }, 1000);
     }
 
+    function renderOptions(optionsList) {
+      selectedText = null;
+      const box = document.getElementById('boxOptions');
+      box.innerHTML = "";
+
+      optionsList.forEach((txt, i) => {
+        const prefix = String.fromCharCode(65 + i); // A, B, C, D
+        const btn = document.createElement('button');
+        btn.className = "opt-btn";
+        btn.textContent = `${prefix}. ${txt}`;
+        btn.setAttribute('aria-label', `Option ${prefix}: ${txt}`);
+        btn.onclick = () => {
+          if (isLocked) return;
+          selectedText = txt;
+          document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        };
+        box.appendChild(btn);
+      });
+    }
+
     function loadQuestion() {
-      selectedAns = null;
       document.getElementById('txtFeedback').textContent = "";
       const q = questions[idx];
 
@@ -314,22 +400,9 @@
       document.querySelectorAll('.gen-group').forEach(g => g.classList.remove('active-gen'));
       document.getElementById(`gen${q.gen}`).classList.add('active-gen');
 
-      const box = document.getElementById('boxOptions');
-      box.innerHTML = "";
-      q.opts.forEach((txt, i) => {
-        const key = String.fromCharCode(65 + i);
-        const btn = document.createElement('button');
-        btn.className = "opt-btn";
-        btn.textContent = txt;
-        btn.setAttribute('aria-label', `Option ${key}: ${txt}`);
-        btn.onclick = () => {
-          if (isLocked) return;
-          selectedAns = key;
-          document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-        };
-        box.appendChild(btn);
-      });
+      // Shuffle options for initial display
+      currentShuffledOpts = shuffleArray(q.opts);
+      renderOptions(currentShuffledOpts);
     }
 
     function submitAnswer() {
@@ -339,13 +412,13 @@
       const fb = document.getElementById('txtFeedback');
       const submitBtn = document.getElementById('btnSubmit');
 
-      if (!selectedAns) {
+      if (!selectedText) {
         fb.style.color = "var(--red)";
         fb.textContent = "⚠️ Pick an option!";
         return;
       }
 
-      if (selectedAns === questions[idx].ans) {
+      if (selectedText === questions[idx].ans) {
         panel.classList.remove('wrong-border');
         panel.classList.add('correct-border');
         fb.style.color = "var(--green)";
@@ -383,9 +456,14 @@
             clearInterval(penaltyInterval);
             isLocked = false;
             submitBtn.disabled = false;
-            document.querySelectorAll('.opt-btn').forEach(b => b.disabled = false);
+            
+            // Re-shuffle options after penalty ends!
+            currentShuffledOpts = shuffleArray(questions[idx].opts);
+            renderOptions(currentShuffledOpts);
+
             panel.classList.remove('wrong-border');
-            fb.textContent = "⚠️ Re-evaluate and select carefully!";
+            fb.style.color = "var(--gold)";
+            fb.textContent = "🔀 Options reshuffled! Try again!";
           }
         }, 1000);
       }
@@ -412,7 +490,7 @@
       clearInterval(timerInterval);
       idx = 0;
       timeLeft = 300;
-      selectedAns = null;
+      selectedText = null;
       isLocked = false;
 
       const submitBtn = document.getElementById('btnSubmit');
