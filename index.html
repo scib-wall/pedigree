@@ -7,36 +7,112 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0d1117;
-      --card-bg: rgba(22, 27, 34, 0.95);
-      --border: rgba(56, 189, 248, 0.3);
+      --bg: #090d16;
+      --panel: rgba(15, 23, 42, 0.85);
+      --border: rgba(56, 189, 248, 0.25);
       --cyan: #38bdf8;
+      --indigo: #6366f1;
       --green: #22c55e;
       --red: #f43f5e;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1rem; }
-    .container { width: 100%; max-width: 480px; }
+
+    /* Animated Gradient Background */
+    body {
+      background: linear-gradient(-45deg, #070a12, #0f172a, #1e1b4b, #0f172a);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #f8fafc; min-height: 100vh; padding: 1rem;
+      display: flex; justify-content: center; align-items: center;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container { width: 100%; max-width: 1100px; }
+
+    /* Login Box */
+    .login-box {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2.5rem; max-width: 440px; margin: 0 auto; text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6); backdrop-filter: blur(12px);
+    }
+    .login-box input {
+      width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+      padding: 1rem; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 700;
+      text-align: center; margin: 1.2rem 0; outline: none;
+    }
+
+    /* Main Responsive Grid Layout (Left Pedigree | Right Questions) */
+    .app-layout {
+      display: none; grid-template-columns: 1fr; gap: 1.5rem;
+    }
+    @media (min-width: 850px) {
+      .app-layout { grid-template-columns: 1.1fr 1fr; }
+    }
+    .app-layout.active { display: grid; }
+
+    .panel {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+      padding: 1.5rem; backdrop-filter: blur(12px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+
+    /* SVG Pedigree Styles */
+    .pedigree-wrapper {
+      background: #030712; border: 1px solid var(--border); border-radius: 14px;
+      padding: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    svg { width: 100%; height: auto; max-height: 320px; }
     
-    .screen { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem; display: none; flex-direction: column; gap: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .screen.active { display: flex; }
-
-    h2 { color: var(--cyan); font-size: 1.4rem; font-weight: 800; text-align: center; }
-    p { font-size: 0.9rem; color: #9ca3af; line-height: 1.4; }
-
-    input { width: 100%; background: #000; border: 1px solid var(--border); padding: 0.8rem; border-radius: 10px; color: #fff; font-size: 1rem; text-align: center; font-weight: 700; }
+    /* Pedigree Generation Highlighting */
+    .gen-group { transition: all 0.5s ease; opacity: 0.25; filter: grayscale(80%); }
+    .gen-group.active-gen { opacity: 1; filter: drop-shadow(0 0 8px var(--cyan)); }
     
-    .btn { background: var(--cyan); color: #000; font-weight: 800; padding: 0.9rem; border: none; border-radius: 12px; cursor: pointer; font-size: 0.95rem; text-transform: uppercase; }
-    .btn:active { transform: scale(0.98); }
+    .symbol { stroke: #38bdf8; stroke-width: 3; fill: #0f172a; }
+    .affected { fill: #38bdf8 !important; }
+    .line { stroke: #94a3b8; stroke-width: 3; stroke-dasharray: 4; animation: dash 20s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -100; } }
 
-    .diagram { background: #000; border: 1px solid var(--border); padding: 0.8rem; border-radius: 10px; font-family: monospace; font-size: 0.85rem; text-align: center; color: var(--cyan); white-space: pre; }
+    /* Question Panel Animations & Styling */
+    .q-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.85rem; color: var(--cyan); }
+    .q-title { font-size: 1.1rem; font-weight: 800; line-height: 1.4; color: #fff; }
 
-    .opt-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 10px; color: #fff; font-size: 0.9rem; font-weight: 700; text-align: left; cursor: pointer; }
-    .opt-btn.selected { background: rgba(56, 189, 248, 0.25); border-color: var(--cyan); }
+    .opts-grid { display: flex; flex-direction: column; gap: 0.8rem; }
+    .opt-btn {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; padding: 1rem; color: #fff; font-weight: 700; font-size: 0.95rem;
+      text-align: left; cursor: pointer; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .opt-btn:hover { background: rgba(56, 189, 248, 0.12); border-color: var(--cyan); transform: translateX(4px); }
+    .opt-btn.selected {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.3));
+      border-color: var(--cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    }
 
-    .feedback { font-size: 0.85rem; font-weight: 800; text-align: center; min-height: 1.2rem; }
-    .feedback.err { color: var(--red); }
+    .btn {
+      background: linear-gradient(135deg, var(--cyan), var(--indigo));
+      color: #000; font-weight: 900; padding: 1rem; border: none; border-radius: 12px;
+      cursor: pointer; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px;
+      transition: all 0.2s; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+    }
+    .btn:hover { transform: scale(1.02); }
+
+    .feedback { font-size: 0.9rem; font-weight: 800; text-align: center; min-height: 1.5rem; }
+    .feedback.err { color: var(--red); animation: shake 0.4s ease; }
     .feedback.ok { color: var(--green); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+
+    /* Finish Screen */
+    .finish-screen {
+      display: none; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 20px; padding: 3rem; text-align: center; backdrop-filter: blur(12px);
+      animation: zoomIn 0.5s ease;
+    }
+    @keyframes zoomIn { from{transform:scale(0.8); opacity:0;} to{transform:scale(1); opacity:1;} }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -44,35 +120,93 @@
 <body>
 
   <div class="container">
-    <!-- LOGIN -->
-    <div class="screen active" id="sLogin">
-      <h2>🧬 SQUAD LOGIN</h2>
-      <p style="text-align:center;">Enter your group name to start the Genetics Challenge!</p>
-      <input type="text" id="teamInput" placeholder="Team Name (e.g. Bio Squad)" maxlength="15">
-      <button class="btn" onclick="startApp()">START MISSION 🚀</button>
+    <!-- 1. LOGIN SCREEN -->
+    <div class="login-box" id="sLogin">
+      <h2 style="color:var(--cyan); font-size: 1.8rem; font-weight: 900;">🧬 AGENT TERMINAL</h2>
+      <p style="color:#94a3b8; font-size: 0.9rem; margin-top: 0.4rem;">Genetics Intelligence & Pedigree Analysis</p>
+      <input type="text" id="teamInput" placeholder="Enter Squad Name..." maxlength="15">
+      <button class="btn" style="width:100%;" onclick="startSession()">CONNECT TO HQ 🚀</button>
     </div>
 
-    <!-- QUIZ -->
-    <div class="screen" id="sQuiz">
-      <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; color:var(--cyan);">
-        <span id="txtSquad">SQUAD</span>
-        <span id="txtStage">Q1 / 5</span>
+    <!-- 2. MAIN RESPONSIVE GAME LAYOUT -->
+    <div class="app-layout" id="sGame">
+      
+      <!-- LEFT SIDE: VISUAL SVG PEDIGREE TREE -->
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="font-size: 1.1rem; color: var(--cyan); font-weight: 800;">🔬 PEDIGREE MAP</h3>
+          <span style="font-size: 0.75rem; background: rgba(56,189,248,0.15); padding: 3px 8px; border-radius: 12px; color: var(--cyan); font-weight:700;">LIVE ANALYSIS</span>
+        </div>
+
+        <div class="pedigree-wrapper">
+          <svg viewBox="0 0 320 220">
+            <!-- GENERATION 1 (Parents) -->
+            <g class="gen-group" id="gen1">
+              <text x="10" y="45" fill="#64748b" font-size="12" font-weight="800">GEN I</text>
+              <line x1="80" y1="40" x2="140" y2="40" class="line" />
+              <!-- Father (Square, Unaffected) -->
+              <rect x="50" y="25" width="30" height="30" class="symbol" />
+              <text x="56" y="20" fill="#94a3b8" font-size="10">Dad (Ff)</text>
+              <!-- Mother (Circle, Unaffected) -->
+              <circle cx="155" cy="40" r="15" class="symbol" />
+              <text x="140" y="20" fill="#94a3b8" font-size="10">Mom (Ff)</text>
+            </g>
+
+            <!-- CONNECTOR LINES TO GEN II -->
+            <line x1="110" y1="40" x2="110" y2="90" class="line" />
+            <line x1="50" y1="90" x2="250" y2="90" class="line" />
+
+            <!-- GENERATION 2 (Offspring) -->
+            <g class="gen-group" id="gen2">
+              <text x="10" y="135" fill="#64748b" font-size="12" font-weight="800">GEN II</text>
+              <!-- Drop Lines -->
+              <line x1="50" y1="90" x2="50" y2="120" class="line" />
+              <line x1="150" y1="90" x2="150" y2="120" class="line" />
+              <line x1="250" y1="90" x2="250" y2="120" class="line" />
+
+              <!-- Child 1: Affected Male (Square) -->
+              <rect x="35" y="120" width="30" height="30" class="symbol affected" />
+              <text x="32" y="165" fill="#38bdf8" font-size="10" font-weight="800">Son 1 (ff)</text>
+
+              <!-- Child 2: Unaffected Female (Circle) -->
+              <circle cx="150" cy="135" r="15" class="symbol" />
+              <text x="130" y="165" fill="#94a3b8" font-size="10">Dau 1</text>
+
+              <!-- Child 3: Affected Female (Circle) -->
+              <circle cx="250" cy="135" r="15" class="symbol affected" />
+              <text x="230" y="165" fill="#38bdf8" font-size="10" font-weight="800">Dau 2 (ff)</text>
+            </g>
+          </svg>
+        </div>
+
+        <p style="font-size: 0.8rem; color: #94a3b8; text-align: center;">
+          🟦 <strong>Shaded Blue</strong> = Has Freckles (Recessive Trait)<br>
+          ⚪ <strong>Unshaded</strong> = No Freckles
+        </p>
       </div>
 
-      <div class="diagram" id="dDiagram">---</div>
-      <div style="font-weight:700; font-size:0.95rem;" id="qText">Loading question...</div>
-      <div id="optsBox" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
-      <div class="feedback" id="fbText"></div>
+      <!-- RIGHT SIDE: ANIMATED QUESTION PANEL -->
+      <div class="panel">
+        <div class="q-header">
+          <span id="txtSquad">SQUAD: ---</span>
+          <span id="txtCase">CASE 1 / 5</span>
+        </div>
 
-      <button class="btn" onclick="checkAnswer()">SUBMIT ANSWER ⚡</button>
+        <div class="q-title" id="txtQuestion">Loading question...</div>
+        <div class="opts-grid" id="boxOptions"></div>
+        <div class="feedback" id="txtFeedback"></div>
+
+        <button class="btn" onclick="submitAnswer()">SUBMIT ANALYSIS ⚡</button>
+      </div>
+
     </div>
 
-    <!-- FINISH -->
-    <div class="screen" id="sFinish" style="text-align:center;">
-      <h2>🏆 MISSION COMPLETED!</h2>
-      <p>Great job! You have successfully solved all 5 genetics cases.</p>
-      <div style="font-size:3rem; margin:1rem 0;">🧬✨</div>
-      <p style="color:var(--green); font-weight:800;" id="txtTime">Time: 0m 0s</p>
+    <!-- 3. FINISH SCREEN -->
+    <div class="finish-screen" id="sFinish">
+      <h2 style="color:var(--cyan); font-size:2.2rem; font-weight:900;">🏆 MISSION ACCOMPLISHED!</h2>
+      <p style="color:#94a3b8; margin: 0.5rem 0 1.5rem 0;">All genetic evidence has been successfully transmitted to HQ.</p>
+      <div style="font-size:4rem; margin-bottom:1rem;">🧬✨</div>
+      <h3 style="color:var(--green); font-size:1.5rem;" id="txtFinalTime">Total Time: 0m 0s</h3>
     </div>
   </div>
 
@@ -89,74 +223,79 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const quiz = [
+    const questions = [
       {
-        q: "1. SYMBOLS: In a pedigree chart, what shape represents a MALE and what represents a FEMALE?",
-        diagram: "⬜ = Male       ◯ = Female\n⬛ = Affected   ● = Affected",
-        opts: ["A. Square = Male, Circle = Female", "B. Circle = Male, Square = Female", "C. Both shapes mean Male"],
+        gen: 1,
+        q: "1. SYMBOLS: Look at Generation I (Top). What do the SQUARE and CIRCLE shapes represent?",
+        opts: ["A. Square = Male | Circle = Female", "B. Circle = Male | Square = Female", "C. Both shapes mean Female"],
         ans: "A"
       },
       {
-        q: "2. RELATIONSHIPS: What does a horizontal line directly connecting a square and circle mean?",
-        diagram: "  (⬜ Dad) --------- (◯ Mom)\n               |\n           (⬜ Son)",
-        opts: ["A. They are brother and sister", "B. They are parents / married", "C. They are twins"],
+        gen: 1,
+        q: "2. RELATIONSHIPS: What does the horizontal line connecting Dad and Mom in Generation I mean?",
+        opts: ["A. They are brother and sister", "B. They are parents / married", "C. They are unrelated friends"],
         ans: "B"
       },
       {
-        q: "3. TRAITS: In this pedigree, SHADED shapes (⬛/●) have Freckles. How many total offspring have freckles?",
-        diagram: "   (⬜) --- (◯)\n         |\n  +------+------+---\n  |      |      |\n (⬛)   (◯)    (●)",
-        opts: ["A. 1 offspring", "B. 2 offspring", "C. 3 offspring"],
+        gen: 2,
+        q: "3. TRAITS: Look at Generation II (Bottom). How many offspring inherited the shaded freckles trait?",
+        opts: ["A. 1 Offspring", "B. 2 Offspring", "C. 3 Offspring"],
         ans: "B"
       },
       {
-        q: "4. GENOTYPES: Having Freckles (F) is dominant over No Freckles (f). If a child has NO freckles, what is their genotype?",
-        diagram: "Dominant:   F (Freckles)\nRecessive:  f (No Freckles)\nChild: Unshaded shape (no freckles)",
-        opts: ["A. FF", "B. Ff", "C. ff"],
+        gen: 2,
+        q: "4. GENOTYPES: Freckles in this family is a recessive trait (ff). What is the genotype of Son 1 (Shaded Square)?",
+        opts: ["A. FF (Dominant)", "B. Ff (Heterozygous)", "C. ff (Recessive Affected)"],
         ans: "C"
       },
       {
-        q: "5. CHANCES: Two heterozygous parents (Ff x Ff) have a child. What is the chance the child gets NO freckles (ff)?",
-        diagram: "Punnett Square (Ff x Ff):\nFF (25%)  |  Ff (50%)  |  ff (25%)",
-        opts: ["A. 25% chance", "B. 50% chance", "C. 100% chance"],
+        gen: 2,
+        q: "5. PROBABILITY: If Mom (Ff) and Dad (Ff) have another child, what is the chance the child gets freckles (ff)?",
+        opts: ["A. 25% Chance (1 in 4)", "B. 50% Chance (2 in 4)", "C. 100% Chance"],
         ans: "A"
       }
     ];
 
-    let team = "";
-    let qIdx = 0;
-    let selected = null;
+    let teamName = "";
+    let stage = 0;
+    let selectedAns = null;
     let startTime = 0;
 
-    function startApp() {
-      team = document.getElementById('teamInput').value.trim();
-      if (!team) return alert("Please enter a Squad Name!");
+    function startSession() {
+      teamName = document.getElementById('teamInput').value.trim();
+      if (!teamName) return alert("Please enter a Squad Name!");
 
       startTime = Date.now();
-      db.ref('teams/' + team).set({ team: team, stage: 1, status: "Active", timeElapsed: 0 });
+      db.ref('teams/' + teamName).set({ team: teamName, stage: 1, status: "Active", timeElapsed: 0 });
 
-      document.getElementById('txtSquad').textContent = `SQUAD: ${team}`;
-      document.getElementById('sLogin').classList.remove('active');
-      document.getElementById('sQuiz').classList.add('active');
-      loadQ();
+      document.getElementById('txtSquad').textContent = `SQUAD: ${teamName}`;
+      document.getElementById('sLogin').style.display = 'none';
+      document.getElementById('sGame').classList.add('active');
+      loadQuestion();
     }
 
-    function loadQ() {
-      selected = null;
-      document.getElementById('fbText').textContent = "";
-      const item = quiz[qIdx];
-      document.getElementById('txtStage').textContent = `Q${qIdx + 1} / 5`;
-      document.getElementById('dDiagram').textContent = item.diagram;
-      document.getElementById('qText').textContent = item.q;
+    function loadQuestion() {
+      selectedAns = null;
+      document.getElementById('txtFeedback').textContent = "";
+      const q = questions[stage];
 
-      const box = document.getElementById('optsBox');
+      document.getElementById('txtCase').textContent = `CASE ${stage + 1} / 5`;
+      document.getElementById('txtQuestion').textContent = q.q;
+
+      // Highlight active Generation on SVG
+      document.querySelectorAll('.gen-group').forEach(g => g.classList.remove('active-gen'));
+      document.getElementById(`gen${q.gen}`).classList.add('active-gen');
+
+      // Populate options
+      const box = document.getElementById('boxOptions');
       box.innerHTML = "";
-      item.opts.forEach((txt, i) => {
+      q.opts.forEach((txt, i) => {
         const key = String.fromCharCode(65 + i);
-        const btn = document.createElement('div');
+        const btn = document.createElement('button');
         btn.className = "opt-btn";
         btn.textContent = txt;
         btn.onclick = () => {
-          selected = key;
+          selectedAns = key;
           document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
           btn.classList.add('selected');
         };
@@ -164,35 +303,35 @@
       });
     }
 
-    function checkAnswer() {
-      const fb = document.getElementById('fbText');
-      if (!selected) {
+    function submitAnswer() {
+      const fb = document.getElementById('txtFeedback');
+      if (!selectedAns) {
         fb.className = "feedback err";
-        fb.textContent = "⚠️ Click an answer option above first!";
+        fb.textContent = "⚠️ Select an answer choice first!";
         return;
       }
 
-      if (selected === quiz[qIdx].ans) {
+      if (selectedAns === questions[stage].ans) {
         fb.className = "feedback ok";
-        fb.textContent = "✅ Correct!";
-        qIdx++;
+        fb.textContent = "✅ Correct! Advancing case...";
+        stage++;
         let elapsed = Math.floor((Date.now() - startTime) / 1000);
 
-        if (qIdx >= quiz.length) {
-          db.ref('teams/' + team).update({ stage: 5, status: "Finished", timeElapsed: elapsed });
+        if (stage >= questions.length) {
+          db.ref('teams/' + teamName).update({ stage: 5, status: "Finished", timeElapsed: elapsed });
           setTimeout(() => {
-            document.getElementById('sQuiz').classList.remove('active');
-            document.getElementById('sFinish').classList.add('active');
+            document.getElementById('sGame').classList.remove('active');
+            document.getElementById('sFinish').style.display = 'block';
             let m = Math.floor(elapsed / 60), s = elapsed % 60;
-            document.getElementById('txtTime').textContent = `Time: ${m}m ${s}s`;
-          }, 500);
+            document.getElementById('txtFinalTime').textContent = `Total Time: ${m}m ${s}s`;
+          }, 600);
         } else {
-          db.ref('teams/' + team).update({ stage: qIdx + 1, status: "Active", timeElapsed: elapsed });
-          setTimeout(loadQ, 500);
+          db.ref('teams/' + teamName).update({ stage: stage + 1, status: "Active", timeElapsed: elapsed });
+          setTimeout(loadQuestion, 600);
         }
       } else {
         fb.className = "feedback err";
-        fb.textContent = "❌ Not quite! Try another choice.";
+        fb.textContent = "❌ Incorrect analysis! Re-evaluate the pedigree.";
       }
     }
   </script>
