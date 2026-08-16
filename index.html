@@ -93,7 +93,7 @@
   <div class="container">
     <div class="login-box" id="sLogin">
       <h2 style="color:var(--cyan); font-size: 1.8rem; font-weight: 900;">🧬 5-MIN SPEED RUN</h2>
-      <p style="color:#94a3b8; font-size: 0.9rem; margin-top: 0.4rem;">4 Generations • 5 Questions • 300 Seconds</p>
+      <p style="color:#94a3b8; font-size: 0.9rem; margin-top: 0.4rem;">5 Rounds • 11 Questions • 300 Seconds</p>
       <input type="text" id="teamInput" placeholder="Enter Squad Name..." maxlength="15" aria-label="Enter Squad Name">
       <button class="btn" style="width:100%;" onclick="startSession()" aria-label="Start 5 Minute Speed Run">START 5-MIN RUN 🚀</button>
     </div>
@@ -154,7 +154,7 @@
       <div class="panel" id="questionPanel">
         <div class="q-header">
           <span id="txtSquad">SQUAD: ---</span>
-          <span id="txtRoundBadge">ROUND 1 • Q1/5</span>
+          <span id="txtRoundBadge">ROUND 1 • Q1/11</span>
         </div>
 
         <div class="q-title" id="txtQuestion">Loading...</div>
@@ -168,7 +168,7 @@
     <div class="finish-screen" id="sFinish">
       <div style="font-size:4rem;">🏆✨</div>
       <h2 style="color:var(--gold); font-size:2rem; font-weight:900;" id="txtFinishTitle">MISSION COMPLETE!</h2>
-      <p style="color:#94a3b8; margin: 0.5rem 0 1.5rem 0;" id="txtFinishSub">You successfully decoded the 4 generations!</p>
+      <p style="color:#94a3b8; margin: 0.5rem 0 1.5rem 0;" id="txtFinishSub">You successfully decoded all 5 rounds!</p>
       <h3 style="color:var(--green); font-size:1.5rem;" id="txtFinalTime">Remaining Time: --:--</h3>
       <button class="btn" style="margin-top: 1.5rem; padding: 1rem 2rem;" onclick="resetGame()" aria-label="Play Again">PLAY AGAIN 🔄</button>
     </div>
@@ -188,34 +188,79 @@
     const db = firebase.database();
 
     const questions = [
+      // --- ROUND 1 (2 Questions) ---
       { 
-        gen: 1, round: 1, qNum: "1/5", 
-        q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent?", 
+        gen: 1, round: 1, qNum: "1/11", 
+        q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent in a pedigree chart?", 
         opts: ["A. Square = Male | Circle = Female", "B. Circle = Male | Square = Female", "C. Square = Affected | Circle = Carrier"], 
         ans: "A" 
       },
       { 
-        gen: 2, round: 2, qNum: "2/5", 
-        q: "R2-Q2 [Gen II]: Son 1 is shaded blue (ff). What MUST be the genotypes of unshaded parents in Gen I?", 
-        opts: ["A. Both are Heterozygous (Ff)", "B. Both are Dominant (FF)", "C. One is (FF), One is (ff)"], 
+        gen: 1, round: 1, qNum: "2/11", 
+        q: "R1-Q2 [Gen I]: What does a shaded symbol mean in a standard pedigree?", 
+        opts: ["A. Deceased individual", "B. Affected by the genetic trait/condition", "C. Unaffected carrier only"], 
+        ans: "B" 
+      },
+
+      // --- ROUND 2 (3 Questions) ---
+      { 
+        gen: 2, round: 2, qNum: "3/11", 
+        q: "R2-Q1 [Gen II]: Gen II Son 1 is shaded blue (ff). What MUST be the genotypes of unshaded parents in Gen I?", 
+        opts: ["A. Both are Heterozygous (Ff)", "B. Both are Homozygous Dominant (FF)", "C. One is (FF), One is (ff)"], 
         ans: "A" 
       },
       { 
-        gen: 3, round: 3, qNum: "3/5", 
-        q: "R3-Q3 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", 
+        gen: 2, round: 2, qNum: "4/11", 
+        q: "R2-Q2 [Gen II]: Gen II Daughter is unshaded. Knowing her parents are Ff x Ff, what is her possible genotype?", 
+        opts: ["A. Must be ff", "B. Either FF or Ff", "C. Must be FF only"], 
+        ans: "B" 
+      },
+      { 
+        gen: 2, round: 2, qNum: "5/11", 
+        q: "R2-Q3 [Gen II]: Horizontal line connecting Gen II Daughter and her partner represents what?", 
+        opts: ["A. Identical twins", "B. Mating / Marriage", "C. Divorced lineage"], 
+        ans: "B" 
+      },
+
+      // --- ROUND 3 (2 Questions) ---
+      { 
+        gen: 3, round: 3, qNum: "6/11", 
+        q: "R3-Q1 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", 
         opts: ["A. 50% Chance", "B. 25% Chance", "C. 75% Chance"], 
         ans: "A" 
       },
       { 
-        gen: 4, round: 4, qNum: "4/5", 
-        q: "R4-Q4 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", 
+        gen: 3, round: 3, qNum: "7/11", 
+        q: "R3-Q2 [Gen III]: What fraction of offspring from ff x Ff will be carrier (Ff) heterozygous?", 
+        opts: ["A. 1/4 (25%)", "B. 1/2 (50%)", "C. 3/4 (75%)"], 
+        ans: "B" 
+      },
+
+      // --- ROUND 4 (3 Questions) ---
+      { 
+        gen: 4, round: 4, qNum: "8/11", 
+        q: "R4-Q1 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", 
         opts: ["A. 75% Chance", "B. 25% Chance", "C. 100% Chance"], 
         ans: "A" 
       },
       { 
-        gen: 4, round: 4, qNum: "5/5", 
-        q: "R4-Q5 [FINAL]: Is this pedigree Autosomal Recessive or Autosomal Dominant?", 
-        opts: ["A. Autosomal Recessive (Skips Gen I)", "B. Autosomal Dominant", "C. X-Linked Dominant"], 
+        gen: 4, round: 4, qNum: "9/11", 
+        q: "R4-Q2 [Gen IV]: What is the probability that a normal (unshaded) child of Ff x Ff is a CARRIER (Ff)?", 
+        opts: ["A. 1/2 (50%)", "B. 2/3 (~67%)", "C. 1/4 (25%)"], 
+        ans: "B" 
+      },
+      { 
+        gen: 4, round: 4, qNum: "10/11", 
+        q: "R4-Q3 [Gen IV]: In this 4-generation pedigree, why did the trait 'skip' Gen I phenotype-wise?", 
+        opts: ["A. Trait is recessive, carried hiddenly by Gen I (Ff)", "B. Trait mutated spontaneously in Gen II", "C. Trait is environment-driven only"], 
+        ans: "A" 
+      },
+
+      // --- ROUND 5 (1 Harder Problem-Solving Punnett Question) ---
+      { 
+        gen: 4, round: 5, qNum: "11/11", 
+        q: "R5-FINAL [PUNNETT CHALLENGE]: If Gen IV Daughter (ff) marries a carrier male (Ff), and they have 3 children, what is the exact probability that ALL 3 children are affected (ff)?", 
+        opts: ["A. 1/8 (12.5%)", "B. 1/4 (25%)", "C. 1/16 (6.25%)"], 
         ans: "A" 
       }
     ];
@@ -312,28 +357,28 @@
 
         if (idx >= questions.length) {
           clearInterval(timerInterval);
-          db.ref('teams/' + teamName).update({ stage: 5, round: 4, status: "Finished", timeElapsed: elapsed });
+          db.ref('teams/' + teamName).update({ stage: 5, round: 5, status: "Finished", timeElapsed: elapsed });
           setTimeout(() => finishGame(true), 600);
         } else {
-          db.ref('teams/' + teamName).update({ stage: idx + 1, round: questions[idx].round, status: "Active", timeElapsed: elapsed });
+          db.ref('teams/' + teamName).update({ stage: questions[idx].gen, round: questions[idx].round, status: "Active", timeElapsed: elapsed });
           setTimeout(() => { panel.classList.remove('correct-border'); loadQuestion(); }, 600);
         }
       } else {
-        // LOCK SYSTEM FOR 10 SECONDS ON WRONG ANSWER
+        // LOCK SYSTEM FOR 7 SECONDS ON WRONG ANSWER
         isLocked = true;
         submitBtn.disabled = true;
         document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
         panel.classList.remove('correct-border');
         panel.classList.add('wrong-border');
 
-        let penaltyTime = 10;
+        let penaltyTime = 7;
         fb.style.color = "var(--red)";
-        fb.textContent = `🔒 INCORRECT! SYSTEM LOCKED FOR ${penaltyTime}s`;
+        fb.textContent = `🔒 INCORRECT! TRY AGAIN IN ${penaltyTime}s`;
 
         let penaltyInterval = setInterval(() => {
           penaltyTime--;
           if (penaltyTime > 0) {
-            fb.textContent = `🔒 INCORRECT! SYSTEM LOCKED FOR ${penaltyTime}s`;
+            fb.textContent = `🔒 INCORRECT! TRY AGAIN IN ${penaltyTime}s`;
           } else {
             clearInterval(penaltyInterval);
             isLocked = false;
@@ -359,7 +404,7 @@
       } else {
         document.getElementById('txtFinishTitle').textContent = "⏰ TIME EXPIRED!";
         document.getElementById('txtFinishSub').textContent = "5 minutes passed! Try again on the next speed run.";
-        document.getElementById('txtFinalTime').textContent = `Reached Question ${idx + 1} of 5`;
+        document.getElementById('txtFinalTime').textContent = `Reached Question ${idx + 1} of 11`;
       }
     }
 
