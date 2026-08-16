@@ -49,7 +49,7 @@
     }
     @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 25px var(--gold); } }
 
-    .countdown-overlay {
+    .countdown-overlay, .pause-overlay {
       position: fixed; inset: 0; background: rgba(7, 10, 18, 0.94); backdrop-filter: blur(12px);
       display: none; justify-content: center; align-items: center; flex-direction: column; z-index: 999;
     }
@@ -63,10 +63,24 @@
       background: var(--panel); border: 2px solid var(--border); border-radius: 20px;
       padding: 1.5rem; backdrop-filter: blur(12px); display: flex; flex-direction: column; gap: 1rem;
       transition: all 0.4s ease;
+      position: relative;
     }
     .panel.correct-border { border-color: var(--green) !important; box-shadow: 0 0 35px rgba(34, 197, 94, 0.4) !important; }
     .panel.wrong-border { border-color: var(--red) !important; box-shadow: 0 0 35px rgba(244, 63, 94, 0.4) !important; animation: shake 0.4s ease; }
     @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+
+    /* Red gradient animated perimeter for nervous high-stakes feel */
+    .panel.intense-low-time {
+      border: 2px solid transparent !important;
+      background-image: linear-gradient(var(--panel), var(--panel)), linear-gradient(90deg, #f43f5e, #f59e0b, #ef4444, #f43f5e);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      background-size: 200% 200%;
+      animation: borderPulse 1.2s linear infinite, shakeNervous 3s infinite;
+      box-shadow: 0 0 30px rgba(244, 63, 94, 0.5) !important;
+    }
+    @keyframes borderPulse { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes shakeNervous { 0%, 90%, 100% { transform: translate(0, 0); } 92% { transform: translate(-2px, 1px); } 94% { transform: translate(2px, -1px); } 96% { transform: translate(-1px, -2px); } 98% { transform: translate(1px, 2px); } }
 
     .pedigree-wrapper { background: #030712; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
     svg { width: 100%; height: auto; max-height: 380px; }
@@ -109,6 +123,12 @@
   <div class="countdown-overlay" id="overlayCountdown">
     <div style="color:var(--gold); font-size:1.8rem; font-weight:900; letter-spacing: 2px;">GET READY...</div>
     <div class="countdown-num" id="txtCountNum">3</div>
+  </div>
+
+  <div class="pause-overlay" id="overlayPause">
+    <div style="font-size: 5rem;">⏸️</div>
+    <div style="color:var(--gold); font-size:2.2rem; font-weight:900; margin-top: 1rem;">RACE PAUSED BY HOST</div>
+    <p style="color:#94a3b8; font-size: 1.1rem; margin-top: 0.5rem;">Stand by while HQ reviews telemetry...</p>
   </div>
 
   <div class="container">
@@ -224,7 +244,7 @@
       { gen: 3, round: 3, qNum: "6/10", q: "R3-Q2 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", opts: ["50% Chance", "25% Chance", "75% Chance", "0% Chance"], ans: "50% Chance" },
       { gen: 4, round: 4, qNum: "7/10", q: "R4-Q1 [Gen IV]: What fraction of offspring from ff x Ff will be carrier (Ff) heterozygous?", opts: ["1/4 (25%)", "1/2 (50%)", "3/4 (75%)", "4/4 (100%)"], ans: "1/2 (50%)" },
       { gen: 4, round: 4, qNum: "8/10", q: "R4-Q2 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", opts: ["75% Chance", "25% Chance", "100% Chance", "50% Chance"], ans: "75% Chance" },
-      { gen: 4, round: 4, qNum: "9/10", q: "R4-Q3 [Gen IV]: What is the probability that a normal (unshaded) child of Ff x Ff is a CARRIER (Ff)?", opts: ["1/2 (50%)", "2/3 (~67%)", "1/4 (25%)", "3/4 (75%)"], ans: "2/3 (~67%)" },
+      { gen: 4, round: 4, qNum: "9/10", q: "R4-Q3 [Gen IV]: If 2 out of 3 healthy children inherit a trait, what is the probability?", opts: ["50%", "67%", "25%", "75%"], ans: "67%" },
       { gen: 4, round: 5, qNum: "10/10", q: "R5-FINAL [PUNNETT CHALLENGE]: If two unaffected parents (Ff x Ff) have an affected child (ff), what type of trait is it?", opts: ["Autosomal Recessive", "Autosomal Dominant", "Incomplete Dominance", "Codominant"], ans: "Autosomal Recessive" }
     ];
 
@@ -262,24 +282,47 @@
 
       cleanTeamKey = sanitizeKey(teamName);
 
-      db.ref('teams/' + cleanTeamKey).set({ 
-        team: teamName, 
-        questionIndex: 1, 
-        stage: 1, 
-        round: 1, 
-        status: "In Lobby", 
-        timeElapsed: 0 
+      // Check if squad already exists to handle reconnection/page refresh mid-race
+      db.ref('teams/' + cleanTeamKey).once('value', (snap) => {
+        const existingData = snap.val();
+        if (existingData && existingData.questionIndex) {
+          idx = Math.min(existingData.questionIndex - 1, questions.length - 1);
+        } else {
+          idx = 0;
+          db.ref('teams/' + cleanTeamKey).set({ 
+            team: teamName, 
+            questionIndex: 1, 
+            stage: 1, 
+            round: 1, 
+            status: "In Lobby", 
+            timeElapsed: 0 
+          });
+        }
+
+        document.getElementById('txtSquad').textContent = `SQUAD: ${teamName.toUpperCase()}`;
+        document.getElementById('txtWaitSquad').textContent = `Squad: ${teamName.toUpperCase()}`;
+        document.getElementById('sLogin').style.display = 'none';
+        document.getElementById('sWaiting').style.display = 'block';
+
+        listenForStart();
       });
-
-      document.getElementById('txtSquad').textContent = `SQUAD: ${teamName.toUpperCase()}`;
-      document.getElementById('txtWaitSquad').textContent = `Squad: ${teamName.toUpperCase()}`;
-      document.getElementById('sLogin').style.display = 'none';
-      document.getElementById('sWaiting').style.display = 'block';
-
-      listenForStart();
     }
 
     function listenForStart() {
+      // Listen for Pause & End signals from Host
+      db.ref('quizState/paused').on('value', (snap) => {
+        const isPaused = snap.val() || false;
+        document.getElementById('overlayPause').style.display = isPaused ? 'flex' : 'none';
+      });
+
+      db.ref('quizState/ended').on('value', (snap) => {
+        const isEnded = snap.val() || false;
+        if (isEnded) {
+          if (timerInterval) clearInterval(timerInterval);
+          finishGame(false);
+        }
+      });
+
       db.ref('quizState/startTime').on('value', (snap) => {
         startTime = snap.val();
 
@@ -319,7 +362,15 @@
             const badge = document.getElementById('txtTimer');
             badge.textContent = `⏱️ ${m}:${s}`;
 
-            if (timeLeft <= 60) badge.classList.add('warning');
+            const qPanel = document.getElementById('questionPanel');
+
+            // Low time warning triggers intense nervous red perimeter
+            if (timeLeft <= 60) {
+              badge.classList.add('warning');
+              qPanel.classList.add('intense-low-time');
+            } else {
+              qPanel.classList.remove('intense-low-time');
+            }
 
             if (timeLeft <= 0) {
               clearInterval(timerInterval);
@@ -457,8 +508,8 @@
         document.getElementById('txtFinalTime').textContent = `Time Remaining: ${m}m ${s}s`;
         confetti({ particleCount: 150, spread: 90 });
       } else {
-        document.getElementById('txtFinishTitle').textContent = "⏰ TIME EXPIRED!";
-        document.getElementById('txtFinishSub').textContent = "6 minutes passed! Try again on the next speed run.";
+        document.getElementById('txtFinishTitle').textContent = "⏰ RACE TERMINATED!";
+        document.getElementById('txtFinishSub').textContent = "The race was ended or time expired! Excellent attempt.";
         document.getElementById('txtFinalTime').textContent = `Reached Question ${idx + 1} of 10`;
       }
     }
@@ -478,7 +529,7 @@
       badge.classList.remove('warning');
 
       const panel = document.getElementById('questionPanel');
-      panel.classList.remove('correct-border', 'wrong-border');
+      panel.classList.remove('correct-border', 'wrong-border', 'intense-low-time');
 
       document.getElementById('sFinish').style.display = 'none';
       document.getElementById('sGame').classList.remove('active');
