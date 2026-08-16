@@ -49,6 +49,12 @@
     }
     @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 25px var(--gold); } }
 
+    .countdown-overlay {
+      position: fixed; inset: 0; background: rgba(7, 10, 18, 0.94); backdrop-filter: blur(12px);
+      display: none; justify-content: center; align-items: center; flex-direction: column; z-index: 999;
+    }
+    .countdown-num { font-size: 9rem; font-weight: 900; color: var(--cyan); text-shadow: 0 0 30px var(--cyan); }
+
     .app-layout { display: none; grid-template-columns: 1fr; gap: 1.5rem; }
     @media (min-width: 880px) { .app-layout { grid-template-columns: 1.15fr 1fr; } }
     .app-layout.active { display: grid; }
@@ -99,6 +105,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
+
+  <div class="countdown-overlay" id="overlayCountdown">
+    <div style="color:var(--gold); font-size:1.8rem; font-weight:900; letter-spacing: 2px;">GET READY...</div>
+    <div class="countdown-num" id="txtCountNum">3</div>
+  </div>
 
   <div class="container">
     <div class="login-box" id="sLogin">
@@ -264,11 +275,22 @@
 
           timerInterval = setInterval(() => {
             const exactServerNow = Date.now() + serverOffset;
-            const elapsedSeconds = Math.floor((exactServerNow - startTime) / 1000);
+            const secondsUntilStart = Math.ceil((startTime - exactServerNow) / 1000);
 
-            if (elapsedSeconds < 0) {
-              document.getElementById('txtWaitStatus').textContent = `🚀 RACE STARTING IN ${Math.abs(elapsedSeconds)}s...`;
+            const overlay = document.getElementById('overlayCountdown');
+            const num = document.getElementById('txtCountNum');
+
+            if (secondsUntilStart > 0) {
+              overlay.style.display = 'flex';
+              num.textContent = secondsUntilStart;
+              document.getElementById('txtWaitStatus').textContent = `🚀 RACE STARTING IN ${secondsUntilStart}s...`;
               return;
+            } else if (secondsUntilStart === 0) {
+              overlay.style.display = 'flex';
+              num.textContent = "GO!";
+              return;
+            } else {
+              overlay.style.display = 'none';
             }
 
             if (document.getElementById('sWaiting').style.display !== 'none') {
@@ -277,6 +299,7 @@
               loadQuestion();
             }
 
+            const elapsedSeconds = Math.floor((exactServerNow - startTime) / 1000);
             timeLeft = Math.max(0, 300 - elapsedSeconds);
             let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
             let s = (timeLeft % 60).toString().padStart(2, '0');
@@ -289,8 +312,9 @@
               clearInterval(timerInterval);
               finishGame(false);
             }
-          }, 1000);
+          }, 200);
         } else {
+          document.getElementById('overlayCountdown').style.display = 'none';
           document.getElementById('sWaiting').style.display = 'block';
           document.getElementById('sGame').classList.remove('active');
           document.getElementById('txtWaitStatus').textContent = "Waiting for Host to start the race...";
