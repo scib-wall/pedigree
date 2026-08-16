@@ -3,78 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Host HQ — 5-Min Live Circuit 🔬</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+  <title>Genetics Field Terminal 🔬</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
-      --bg: #070a12;
-      --card: rgba(15, 23, 42, 0.88);
-      --border: rgba(56, 189, 248, 0.3);
+      --bg: #090d16;
+      --panel: rgba(15, 23, 42, 0.88);
+      --border: rgba(56, 189, 248, 0.25);
       --cyan: #38bdf8;
-      --gold: #f59e0b;
+      --indigo: #6366f1;
       --green: #22c55e;
       --red: #f43f5e;
-      --purple: #a855f7;
+      --gold: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-    body { background: linear-gradient(135deg, #050811 0%, #0f172a 50%, #1a103c 100%); color: #fff; padding: 1.5rem; min-height: 100vh; }
+    body {
+      background: linear-gradient(-45deg, #050811, #0f172a, #1e1b4b, #0f172a);
+      background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+      color: #f8fafc; min-height: 100vh; padding: 1rem;
+      display: flex; justify-content: center; align-items: center;
+    }
+    @keyframes gradientBG { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
-    header { display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 1rem 1.8rem; margin-bottom: 1.5rem; }
+    .container { width: 100%; max-width: 1150px; }
 
-    .radar-container { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 1.8rem; margin-bottom: 1.5rem; }
-    .track-svg { width: 100%; height: auto; max-height: 320px; }
+    .login-box {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2.5rem; max-width: 440px; margin: 0 auto; text-align: center; backdrop-filter: blur(12px);
+    }
+    .login-box input {
+      width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+      padding: 1rem; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 700;
+      text-align: center; margin: 1.2rem 0; outline: none;
+    }
 
-    .squad-node circle { fill: var(--cyan); stroke: #ffffff; stroke-width: 3; filter: drop-shadow(0 0 10px var(--cyan)); }
-    .squad-node text { fill: #fff; font-size: 10px; font-weight: 900; text-anchor: middle; }
+    .app-layout { display: none; grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (min-width: 880px) { .app-layout { grid-template-columns: 1.15fr 1fr; } }
+    .app-layout.active { display: grid; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.2rem; display: flex; flex-direction: column; gap: 0.8rem; }
-    .card.winner { border-color: var(--gold); box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
+    .panel {
+      background: var(--panel); border: 2px solid var(--border); border-radius: 20px;
+      padding: 1.5rem; backdrop-filter: blur(12px); display: flex; flex-direction: column; gap: 1rem;
+      transition: all 0.4s ease;
+    }
+    .panel.correct-border { border-color: var(--green) !important; box-shadow: 0 0 35px rgba(34, 197, 94, 0.4) !important; }
+    .panel.wrong-border { border-color: var(--red) !important; box-shadow: 0 0 35px rgba(244, 63, 94, 0.4) !important; animation: shake 0.4s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
 
-    .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--purple)); }
+    .pedigree-wrapper { background: #030712; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
+    svg { width: 100%; height: auto; max-height: 380px; }
+    .gen-group { transition: all 0.6s ease; opacity: 0.2; filter: grayscale(90%); }
+    .gen-group.active-gen { opacity: 1; filter: drop-shadow(0 0 10px var(--cyan)); }
+    .symbol { stroke: #38bdf8; stroke-width: 2.5; fill: #0f172a; }
+    .affected { fill: #38bdf8 !important; }
+    .line { stroke: #64748b; stroke-width: 2; stroke-dasharray: 4; }
 
-    .btn-reset { background: var(--red); color: white; border: none; padding: 0.7rem 1.4rem; border-radius: 12px; font-weight: 800; cursor: pointer; }
+    .q-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.85rem; color: var(--cyan); }
+    .q-title { font-size: 1.05rem; font-weight: 800; line-height: 1.4; color: #fff; min-height: 3rem; }
+    .opts-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+    .opt-btn {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; padding: 0.9rem 1rem; color: #fff; font-weight: 700; font-size: 0.95rem;
+      text-align: left; cursor: pointer; transition: all 0.2s;
+    }
+    .opt-btn:hover { background: rgba(56, 189, 248, 0.12); border-color: var(--cyan); }
+    .opt-btn.selected { background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.3)); border-color: var(--cyan); }
+
+    .btn {
+      background: linear-gradient(135deg, var(--cyan), var(--indigo));
+      color: #000; font-weight: 900; padding: 1rem; border: none; border-radius: 12px;
+      cursor: pointer; font-size: 1rem; text-transform: uppercase;
+    }
+
+    .timer-badge { font-size: 1.1rem; font-weight: 900; color: var(--gold); background: rgba(245, 158, 11, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--gold); }
+    .timer-badge.warning { color: var(--red); border-color: var(--red); background: rgba(244, 63, 94, 0.15); animation: shake 0.5s infinite; }
+
+    .finish-screen { display: none; background: var(--panel); border: 2px solid var(--gold); border-radius: 24px; padding: 3rem 2rem; text-align: center; }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <header>
-    <div>
-      <h1 style="color:var(--cyan); font-size:1.6rem; font-weight:900;">5-MIN SPEED RUN COMMAND HQ</h1>
-      <p style="color:#94a3b8; font-size:0.85rem;">Live 5-Question Pedigree Circuit Radar</p>
+  <div class="container">
+    <div class="login-box" id="sLogin">
+      <h2 style="color:var(--cyan); font-size: 1.8rem; font-weight: 900;">🧬 5-MIN SPEED RUN</h2>
+      <p style="color:#94a3b8; font-size: 0.9rem; margin-top: 0.4rem;">4 Generations • 5 Questions • 300 Seconds</p>
+      <input type="text" id="teamInput" placeholder="Enter Squad Name..." maxlength="15">
+      <button class="btn" style="width:100%;" onclick="startSession()">START 5-MIN RUN 🚀</button>
     </div>
-    <button class="btn-reset" onclick="resetHQ()">RESET SPEED RUN 🔄</button>
-  </header>
 
-  <div class="radar-container">
-    <svg class="track-svg" viewBox="0 0 900 280">
-      <path d="M 100 140 L 275 80 L 450 200 L 625 80 L 800 140" fill="none" stroke="rgba(56,189,248,0.2)" stroke-width="6" stroke-dasharray="8" />
+    <div class="app-layout" id="sGame">
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="font-size: 1.1rem; color: var(--cyan); font-weight: 800;">🔬 4-GEN PEDIGREE</h3>
+          <span class="timer-badge" id="txtTimer">⏱️ 05:00</span>
+        </div>
 
-      <circle cx="100" cy="140" r="28" fill="#0f172a" stroke="#38bdf8" stroke-width="4" />
-      <text x="100" y="144" fill="#38bdf8" font-size="11" font-weight="900" text-anchor="middle">Q1</text>
+        <div class="pedigree-wrapper">
+          <svg viewBox="0 0 320 280">
+            <g class="gen-group" id="gen1">
+              <text x="5" y="30" fill="#64748b" font-size="10" font-weight="800">GEN I</text>
+              <line x1="80" y1="25" x2="140" y2="25" class="line" />
+              <rect x="55" y="10" width="25" height="25" class="symbol" />
+              <circle cx="155" cy="22" r="13" class="symbol" />
+            </g>
 
-      <circle cx="275" cy="80" r="28" fill="#0f172a" stroke="#38bdf8" stroke-width="4" />
-      <text x="275" y="84" fill="#38bdf8" font-size="11" font-weight="900" text-anchor="middle">Q2</text>
+            <line x1="110" y1="25" x2="110" y2="65" class="line" />
+            <line x1="60" y1="65" x2="220" y2="65" class="line" />
 
-      <circle cx="450" cy="200" r="28" fill="#0f172a" stroke="#a855f7" stroke-width="4" />
-      <text x="450" y="204" fill="#a855f7" font-size="11" font-weight="900" text-anchor="middle">Q3</text>
+            <g class="gen-group" id="gen2">
+              <text x="5" y="100" fill="#64748b" font-size="10" font-weight="800">GEN II</text>
+              <line x1="60" y1="65" x2="60" y2="90" class="line" />
+              <line x1="220" y1="65" x2="220" y2="90" class="line" />
+              <rect x="48" y="90" width="25" height="25" class="symbol affected" />
+              <circle cx="220" cy="102" r="13" class="symbol" />
+              <line x1="233" y1="102" x2="270" y2="102" class="line" />
+              <rect x="270" y="90" width="25" height="25" class="symbol" />
+            </g>
 
-      <circle cx="625" cy="80" r="28" fill="#0f172a" stroke="#f43f5e" stroke-width="4" />
-      <text x="625" y="84" fill="#f43f5e" font-size="11" font-weight="900" text-anchor="middle">Q4</text>
+            <line x1="250" y1="102" x2="250" y2="145" class="line" />
+            <line x1="180" y1="145" x2="280" y2="145" class="line" />
 
-      <circle cx="800" cy="140" r="32" fill="#0f172a" stroke="#f59e0b" stroke-width="5" />
-      <text x="800" y="145" fill="#f59e0b" font-size="16" font-weight="900" text-anchor="middle">🏆</text>
+            <g class="gen-group" id="gen3">
+              <text x="5" y="175" fill="#64748b" font-size="10" font-weight="800">GEN III</text>
+              <line x1="180" y1="145" x2="180" y2="165" class="line" />
+              <line x1="280" y1="145" x2="280" y2="165" class="line" />
+              <circle cx="180" cy="178" r="13" class="symbol affected" />
+              <rect x="268" y="165" width="25" height="25" class="symbol" />
+              <line x1="193" y1="178" x2="225" y2="178" class="line" />
+              <rect x="225" y="165" width="25" height="25" class="symbol" />
+            </g>
 
-      <g id="teamNodesGroup"></g>
-    </svg>
+            <line x1="209" y1="178" x2="209" y2="220" class="line" />
+
+            <g class="gen-group" id="gen4">
+              <text x="5" y="248" fill="#64748b" font-size="10" font-weight="800">GEN IV</text>
+              <line x1="209" y1="220" x2="209" y2="238" class="line" />
+              <circle cx="209" cy="250" r="13" class="symbol affected" />
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel" id="questionPanel">
+        <div class="q-header">
+          <span id="txtSquad">SQUAD: ---</span>
+          <span id="txtRoundBadge">ROUND 1 • Q1/5</span>
+        </div>
+
+        <div class="q-title" id="txtQuestion">Loading...</div>
+        <div class="opts-grid" id="boxOptions"></div>
+        <div style="min-height:1.5rem; font-weight:800; text-align:center;" id="txtFeedback"></div>
+
+        <button class="btn" onclick="submitAnswer()">SUBMIT ANSWER ⚡</button>
+      </div>
+    </div>
+
+    <div class="finish-screen" id="sFinish">
+      <div style="font-size:4rem;">🏆✨</div>
+      <h2 style="color:var(--gold); font-size:2rem; font-weight:900;" id="txtFinishTitle">MISSION COMPLETE!</h2>
+      <p style="color:#94a3b8; margin: 0.5rem 0 1.5rem 0;" id="txtFinishSub">You successfully decoded the 4 generations!</p>
+      <h3 style="color:var(--green); font-size:1.5rem;" id="txtFinalTime">Remaining Time: --:--</h3>
+    </div>
   </div>
-
-  <div class="grid" id="squadGrid"></div>
 
   <script>
     const firebaseConfig = {
@@ -89,76 +183,129 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const coords = {
-      1: { x: 100, y: 140 },
-      2: { x: 275, y: 80 },
-      3: { x: 450, y: 200 },
-      4: { x: 625, y: 80 },
-      5: { x: 800, y: 140 }
-    };
+    const questions = [
+      { gen: 1, round: 1, qNum: "1/5", q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent?", opts: ["A. Square = Male | Circle = Female", "B. Circle = Male | Square = Female"], ans: "A" },
+      { gen: 2, round: 2, qNum: "2/5", q: "R2-Q2 [Gen II]: Son 1 is shaded blue (ff). What MUST be the genotypes of unshaded parents in Gen I?", opts: ["A. Both are Heterozygous (Ff)", "B. Both are Dominant (FF)"], ans: "A" },
+      { gen: 3, round: 3, qNum: "3/5", q: "R3-Q3 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", opts: ["A. 50% Chance", "B. 25% Chance"], ans: "A" },
+      { gen: 4, round: 4, qNum: "4/5", q: "R4-Q4 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", opts: ["A. 75% Chance", "B. 25% Chance"], ans: "A" },
+      { gen: 4, round: 4, qNum: "5/5", q: "R4-Q5 [FINAL]: Is this pedigree Autosomal Recessive or Autosomal Dominant?", opts: ["A. Autosomal Recessive (Skips Gen I)", "B. Autosomal Dominant"], ans: "A" }
+    ];
 
-    let firstWinner = false;
+    let teamName = "";
+    let idx = 0;
+    let selectedAns = null;
+    let timeLeft = 300; // 5 minutes in seconds
+    let timerInterval = null;
 
-    db.ref('teams').on('value', (snap) => {
-      const data = snap.val();
-      const nodesGroup = document.getElementById('teamNodesGroup');
-      const grid = document.getElementById('squadGrid');
+    function startSession() {
+      teamName = document.getElementById('teamInput').value.trim();
+      if (!teamName) return alert("Enter Squad Name!");
 
-      if (!data) {
-        nodesGroup.innerHTML = '';
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 2rem;">📡 Waiting for squad connections...</div>`;
+      db.ref('teams/' + teamName).set({ team: teamName, stage: 1, round: 1, status: "Active", timeElapsed: 0 });
+
+      document.getElementById('txtSquad').textContent = `SQUAD: ${teamName.toUpperCase()}`;
+      document.getElementById('sLogin').style.display = 'none';
+      document.getElementById('sGame').classList.add('active');
+
+      startTimer();
+      loadQuestion();
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        let s = (timeLeft % 60).toString().padStart(2, '0');
+        const badge = document.getElementById('txtTimer');
+        badge.textContent = `⏱️ ${m}:${s}`;
+
+        if (timeLeft <= 60) badge.classList.add('warning');
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          finishGame(false);
+        }
+      }, 1000);
+    }
+
+    function loadQuestion() {
+      selectedAns = null;
+      document.getElementById('txtFeedback').textContent = "";
+      const q = questions[idx];
+
+      document.getElementById('txtRoundBadge').textContent = `ROUND ${q.round} • Q${q.qNum}`;
+      document.getElementById('txtQuestion').textContent = q.q;
+
+      document.querySelectorAll('.gen-group').forEach(g => g.classList.remove('active-gen'));
+      document.getElementById(`gen${q.gen}`).classList.add('active-gen');
+
+      const box = document.getElementById('boxOptions');
+      box.innerHTML = "";
+      q.opts.forEach((txt, i) => {
+        const key = String.fromCharCode(65 + i);
+        const btn = document.createElement('button');
+        btn.className = "opt-btn";
+        btn.textContent = txt;
+        btn.onclick = () => {
+          selectedAns = key;
+          document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        };
+        box.appendChild(btn);
+      });
+    }
+
+    function submitAnswer() {
+      const panel = document.getElementById('questionPanel');
+      const fb = document.getElementById('txtFeedback');
+
+      if (!selectedAns) {
+        fb.style.color = "var(--red)";
+        fb.textContent = "⚠️ Pick an option!";
         return;
       }
 
-      const list = Object.keys(data).map(k => data[k]);
-      list.sort((a, b) => b.stage - a.stage || a.timeElapsed - b.timeElapsed);
+      if (selectedAns === questions[idx].ans) {
+        panel.classList.remove('wrong-border');
+        panel.classList.add('correct-border');
+        fb.style.color = "var(--green)";
+        fb.textContent = "✨ CORRECT!";
+        confetti({ particleCount: 25, spread: 50, origin: { y: 0.7 } });
 
-      nodesGroup.innerHTML = '';
-      grid.innerHTML = '';
+        idx++;
+        let elapsed = 300 - timeLeft;
 
-      if (list[0] && list[0].status === 'Finished' && !firstWinner) {
-        firstWinner = true;
-        confetti({ particleCount: 200, spread: 100 });
+        if (idx >= questions.length) {
+          clearInterval(timerInterval);
+          db.ref('teams/' + teamName).update({ stage: 5, round: 4, status: "Finished", timeElapsed: elapsed });
+          setTimeout(() => finishGame(true), 600);
+        } else {
+          db.ref('teams/' + teamName).update({ stage: idx + 1, round: questions[idx].round, status: "Active", timeElapsed: elapsed });
+          setTimeout(() => { panel.classList.remove('correct-border'); loadQuestion(); }, 600);
+        }
+      } else {
+        panel.classList.remove('correct-border');
+        panel.classList.add('wrong-border');
+        fb.style.color = "var(--red)";
+        fb.textContent = "❌ INCORRECT! RE-EVALUATE.";
+        setTimeout(() => panel.classList.remove('wrong-border'), 600);
       }
+    }
 
-      list.forEach((squad, idx) => {
-        const c = coords[squad.stage] || coords[1];
-        const offsetX = (idx % 3 - 1) * 16;
-        const offsetY = Math.floor(idx / 3) * 16;
+    function finishGame(win) {
+      document.getElementById('sGame').classList.remove('active');
+      const screen = document.getElementById('sFinish');
+      screen.style.display = 'block';
 
-        const node = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        node.setAttribute('class', 'squad-node');
-        node.setAttribute('transform', `translate(${c.x + offsetX}, ${c.y + offsetY})`);
-        node.innerHTML = `
-          <circle r="15" />
-          <text y="4">${squad.team.substring(0, 3).toUpperCase()}</text>
-        `;
-        nodesGroup.appendChild(node);
-
-        const isFinished = squad.status === 'Finished';
-        const pct = Math.min(Math.round((squad.stage / 5) * 100), 100);
-
-        const card = document.createElement('div');
-        card.className = `card ${isFinished && idx === 0 ? 'winner' : ''}`;
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between;">
-            <strong>${idx === 0 ? '🥇 ' : ''}${squad.team}</strong>
-            <span style="color:var(--cyan); font-weight:800;">Q${squad.stage} / 5</span>
-          </div>
-          <div class="progress-bar"><div class="progress-fill" style="width: ${pct}%;"></div></div>
-          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#94a3b8;">
-            <span>${isFinished ? '🏆 FINISHED' : '⚡ IN FIELD'}</span>
-            <span>⏱️ ${squad.timeElapsed || 0}s</span>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    });
-
-    function resetHQ() {
-      if (confirm("Reset all positions for a new 5-minute run?")) {
-        firstWinner = false;
-        db.ref('teams').remove();
+      if (win) {
+        let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+        document.getElementById('txtFinishTitle').textContent = "SPEED RUN VICTORY! 🏆";
+        document.getElementById('txtFinalTime').textContent = `Time Remaining: ${m}m ${s}s`;
+        confetti({ particleCount: 150, spread: 90 });
+      } else {
+        document.getElementById('txtFinishTitle').textContent = "⏰ TIME EXPIRED!";
+        document.getElementById('txtFinishSub').textContent = "5 minutes passed! Try again on the next speed run.";
+        document.getElementById('txtFinalTime').textContent = `Reached Question ${idx + 1} of 5`;
       }
     }
   </script>
