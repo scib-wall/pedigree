@@ -5,21 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Genetics Field Terminal 🔬</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
       --bg: #090d16;
-      --panel: rgba(15, 23, 42, 0.85);
+      --panel: rgba(15, 23, 42, 0.88);
       --border: rgba(56, 189, 248, 0.25);
       --cyan: #38bdf8;
       --indigo: #6366f1;
       --green: #22c55e;
       --red: #f43f5e;
+      --gold: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-    /* Animated Gradient Background */
     body {
-      background: linear-gradient(-45deg, #070a12, #0f172a, #1e1b4b, #0f172a);
+      background: linear-gradient(-45deg, #050811, #0f172a, #1e1b4b, #0f172a);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
       color: #f8fafc; min-height: 100vh; padding: 1rem;
@@ -31,9 +32,9 @@
       100% { background-position: 0% 50%; }
     }
 
-    .container { width: 100%; max-width: 1100px; }
+    .container { width: 100%; max-width: 1150px; }
 
-    /* Login Box */
+    /* Login Screen */
     .login-box {
       background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
       padding: 2.5rem; max-width: 440px; margin: 0 auto; text-align: center;
@@ -45,47 +46,68 @@
       text-align: center; margin: 1.2rem 0; outline: none;
     }
 
-    /* Main Responsive Grid Layout (Left Pedigree | Right Questions) */
+    /* Split Grid Layout: Left Pedigree | Right Questions */
     .app-layout {
       display: none; grid-template-columns: 1fr; gap: 1.5rem;
     }
-    @media (min-width: 850px) {
-      .app-layout { grid-template-columns: 1.1fr 1fr; }
+    @media (min-width: 880px) {
+      .app-layout { grid-template-columns: 1.15fr 1fr; }
     }
     .app-layout.active { display: grid; }
 
     .panel {
-      background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+      background: var(--panel); border: 2px solid var(--border); border-radius: 20px;
       padding: 1.5rem; backdrop-filter: blur(12px);
       box-shadow: 0 15px 35px rgba(0,0,0,0.4);
       display: flex; flex-direction: column; gap: 1rem;
+      transition: all 0.4s ease;
     }
+
+    /* Dynamic Border FX on Correct/Incorrect Answer */
+    .panel.correct-border {
+      border-color: var(--green) !important;
+      box-shadow: 0 0 35px rgba(34, 197, 94, 0.4) !important;
+      animation: pulseGreen 0.6s ease;
+    }
+    .panel.wrong-border {
+      border-color: var(--red) !important;
+      box-shadow: 0 0 35px rgba(244, 63, 94, 0.4) !important;
+      animation: shake 0.4s ease;
+    }
+    @keyframes pulseGreen { 0%{transform: scale(1);} 50%{transform: scale(1.02);} 100%{transform: scale(1);} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
 
     /* SVG Pedigree Styles */
     .pedigree-wrapper {
       background: #030712; border: 1px solid var(--border); border-radius: 14px;
-      padding: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 1rem; display: flex; flex-direction: column; align-items: center;
     }
-    svg { width: 100%; height: auto; max-height: 320px; }
-    
-    /* Pedigree Generation Highlighting */
-    .gen-group { transition: all 0.5s ease; opacity: 0.25; filter: grayscale(80%); }
-    .gen-group.active-gen { opacity: 1; filter: drop-shadow(0 0 8px var(--cyan)); }
-    
-    .symbol { stroke: #38bdf8; stroke-width: 3; fill: #0f172a; }
+    svg { width: 100%; height: auto; max-height: 380px; }
+
+    .gen-group { transition: all 0.6s ease; opacity: 0.2; filter: grayscale(90%); }
+    .gen-group.active-gen {
+      opacity: 1; filter: drop-shadow(0 0 10px var(--cyan));
+      animation: pulseGen 2s ease-in-out infinite alternate;
+    }
+    @keyframes pulseGen {
+      from { filter: drop-shadow(0 0 8px var(--cyan)); }
+      to { filter: drop-shadow(0 0 16px var(--indigo)); }
+    }
+
+    .symbol { stroke: #38bdf8; stroke-width: 2.5; fill: #0f172a; }
     .affected { fill: #38bdf8 !important; }
-    .line { stroke: #94a3b8; stroke-width: 3; stroke-dasharray: 4; animation: dash 20s linear infinite; }
+    .line { stroke: #64748b; stroke-width: 2; stroke-dasharray: 4; animation: dash 25s linear infinite; }
     @keyframes dash { to { stroke-dashoffset: -100; } }
 
-    /* Question Panel Animations & Styling */
+    /* Question Panel Styles */
     .q-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.85rem; color: var(--cyan); }
-    .q-title { font-size: 1.1rem; font-weight: 800; line-height: 1.4; color: #fff; }
+    .q-title { font-size: 1.05rem; font-weight: 800; line-height: 1.4; color: #fff; min-height: 3rem; }
 
-    .opts-grid { display: flex; flex-direction: column; gap: 0.8rem; }
+    .opts-grid { display: flex; flex-direction: column; gap: 0.75rem; }
     .opt-btn {
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px; padding: 1rem; color: #fff; font-weight: 700; font-size: 0.95rem;
-      text-align: left; cursor: pointer; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border-radius: 12px; padding: 0.9rem 1rem; color: #fff; font-weight: 700; font-size: 0.95rem;
+      text-align: left; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .opt-btn:hover { background: rgba(56, 189, 248, 0.12); border-color: var(--cyan); transform: translateX(4px); }
     .opt-btn.selected {
@@ -102,17 +124,16 @@
     .btn:hover { transform: scale(1.02); }
 
     .feedback { font-size: 0.9rem; font-weight: 800; text-align: center; min-height: 1.5rem; }
-    .feedback.err { color: var(--red); animation: shake 0.4s ease; }
+    .feedback.err { color: var(--red); }
     .feedback.ok { color: var(--green); }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
 
-    /* Finish Screen */
+    /* Victory Modal Screen */
     .finish-screen {
-      display: none; background: var(--panel); border: 1px solid var(--border);
-      border-radius: 20px; padding: 3rem; text-align: center; backdrop-filter: blur(12px);
-      animation: zoomIn 0.5s ease;
+      display: none; background: var(--panel); border: 2px solid var(--gold);
+      border-radius: 24px; padding: 3rem 2rem; text-align: center; backdrop-filter: blur(16px);
+      box-shadow: 0 0 60px rgba(245, 158, 11, 0.4); animation: zoomIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    @keyframes zoomIn { from{transform:scale(0.8); opacity:0;} to{transform:scale(1); opacity:1;} }
+    @keyframes zoomIn { from{transform:scale(0.7); opacity:0;} to{transform:scale(1); opacity:1;} }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -122,91 +143,108 @@
   <div class="container">
     <!-- 1. LOGIN SCREEN -->
     <div class="login-box" id="sLogin">
-      <h2 style="color:var(--cyan); font-size: 1.8rem; font-weight: 900;">🧬 AGENT TERMINAL</h2>
-      <p style="color:#94a3b8; font-size: 0.9rem; margin-top: 0.4rem;">Genetics Intelligence & Pedigree Analysis</p>
+      <h2 style="color:var(--cyan); font-size: 1.8rem; font-weight: 900;">🧬 SQUAD TERMINAL</h2>
+      <p style="color:#94a3b8; font-size: 0.9rem; margin-top: 0.4rem;">4-Generation Pedigree Challenge</p>
       <input type="text" id="teamInput" placeholder="Enter Squad Name..." maxlength="15">
       <button class="btn" style="width:100%;" onclick="startSession()">CONNECT TO HQ 🚀</button>
     </div>
 
-    <!-- 2. MAIN RESPONSIVE GAME LAYOUT -->
+    <!-- 2. SPLIT LAYOUT: LEFT PEDIGREE MAP | RIGHT QUESTIONS -->
     <div class="app-layout" id="sGame">
       
-      <!-- LEFT SIDE: VISUAL SVG PEDIGREE TREE -->
+      <!-- LEFT SIDE: 4-GENERATION SVG PEDIGREE -->
       <div class="panel">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h3 style="font-size: 1.1rem; color: var(--cyan); font-weight: 800;">🔬 PEDIGREE MAP</h3>
-          <span style="font-size: 0.75rem; background: rgba(56,189,248,0.15); padding: 3px 8px; border-radius: 12px; color: var(--cyan); font-weight:700;">LIVE ANALYSIS</span>
+          <h3 style="font-size: 1.1rem; color: var(--cyan); font-weight: 800;">🔬 4-GEN PEDIGREE MAP</h3>
+          <span id="txtGenBadge" style="font-size: 0.75rem; background: rgba(56,189,248,0.15); padding: 4px 10px; border-radius: 12px; color: var(--cyan); font-weight:800;">GEN I ACTIVE</span>
         </div>
 
         <div class="pedigree-wrapper">
-          <svg viewBox="0 0 320 220">
-            <!-- GENERATION 1 (Parents) -->
+          <svg viewBox="0 0 320 280">
+            <!-- GEN I -->
             <g class="gen-group" id="gen1">
-              <text x="10" y="45" fill="#64748b" font-size="12" font-weight="800">GEN I</text>
-              <line x1="80" y1="40" x2="140" y2="40" class="line" />
-              <!-- Father (Square, Unaffected) -->
-              <rect x="50" y="25" width="30" height="30" class="symbol" />
-              <text x="56" y="20" fill="#94a3b8" font-size="10">Dad (Ff)</text>
-              <!-- Mother (Circle, Unaffected) -->
-              <circle cx="155" cy="40" r="15" class="symbol" />
-              <text x="140" y="20" fill="#94a3b8" font-size="10">Mom (Ff)</text>
+              <text x="5" y="30" fill="#64748b" font-size="10" font-weight="800">GEN I</text>
+              <line x1="80" y1="25" x2="140" y2="25" class="line" />
+              <rect x="55" y="10" width="25" height="25" class="symbol" />
+              <circle cx="155" cy="22" r="13" class="symbol" />
             </g>
 
-            <!-- CONNECTOR LINES TO GEN II -->
-            <line x1="110" y1="40" x2="110" y2="90" class="line" />
-            <line x1="50" y1="90" x2="250" y2="90" class="line" />
+            <!-- GEN I TO II LINES -->
+            <line x1="110" y1="25" x2="110" y2="65" class="line" />
+            <line x1="60" y1="65" x2="220" y2="65" class="line" />
 
-            <!-- GENERATION 2 (Offspring) -->
+            <!-- GEN II -->
             <g class="gen-group" id="gen2">
-              <text x="10" y="135" fill="#64748b" font-size="12" font-weight="800">GEN II</text>
-              <!-- Drop Lines -->
-              <line x1="50" y1="90" x2="50" y2="120" class="line" />
-              <line x1="150" y1="90" x2="150" y2="120" class="line" />
-              <line x1="250" y1="90" x2="250" y2="120" class="line" />
+              <text x="5" y="100" fill="#64748b" font-size="10" font-weight="800">GEN II</text>
+              <line x1="60" y1="65" x2="60" y2="90" class="line" />
+              <line x1="220" y1="65" x2="220" y2="90" class="line" />
+              
+              <rect x="48" y="90" width="25" height="25" class="symbol affected" />
+              <circle cx="220" cy="102" r="13" class="symbol" />
+              
+              <!-- Gen II Spouse -->
+              <line x1="233" y1="102" x2="270" y2="102" class="line" />
+              <rect x="270" y="90" width="25" height="25" class="symbol" />
+            </g>
 
-              <!-- Child 1: Affected Male (Square) -->
-              <rect x="35" y="120" width="30" height="30" class="symbol affected" />
-              <text x="32" y="165" fill="#38bdf8" font-size="10" font-weight="800">Son 1 (ff)</text>
+            <!-- GEN II TO III LINES -->
+            <line x1="250" y1="102" x2="250" y2="145" class="line" />
+            <line x1="180" y1="145" x2="280" y2="145" class="line" />
 
-              <!-- Child 2: Unaffected Female (Circle) -->
-              <circle cx="150" cy="135" r="15" class="symbol" />
-              <text x="130" y="165" fill="#94a3b8" font-size="10">Dau 1</text>
+            <!-- GEN III -->
+            <g class="gen-group" id="gen3">
+              <text x="5" y="175" fill="#64748b" font-size="10" font-weight="800">GEN III</text>
+              <line x1="180" y1="145" x2="180" y2="165" class="line" />
+              <line x1="280" y1="145" x2="280" y2="165" class="line" />
 
-              <!-- Child 3: Affected Female (Circle) -->
-              <circle cx="250" cy="135" r="15" class="symbol affected" />
-              <text x="230" y="165" fill="#38bdf8" font-size="10" font-weight="800">Dau 2 (ff)</text>
+              <circle cx="180" cy="178" r="13" class="symbol affected" />
+              <rect x="268" y="165" width="25" height="25" class="symbol" />
+
+              <!-- Gen III Spouse -->
+              <line x1="193" y1="178" x2="225" y2="178" class="line" />
+              <rect x="225" y="165" width="25" height="25" class="symbol" />
+            </g>
+
+            <!-- GEN III TO IV LINES -->
+            <line x1="209" y1="178" x2="209" y2="220" class="line" />
+
+            <!-- GEN IV -->
+            <g class="gen-group" id="gen4">
+              <text x="5" y="248" fill="#64748b" font-size="10" font-weight="800">GEN IV</text>
+              <line x1="209" y1="220" x2="209" y2="238" class="line" />
+              <circle cx="209" cy="250" r="13" class="symbol affected" />
             </g>
           </svg>
         </div>
 
         <p style="font-size: 0.8rem; color: #94a3b8; text-align: center;">
-          🟦 <strong>Shaded Blue</strong> = Has Freckles (Recessive Trait)<br>
-          ⚪ <strong>Unshaded</strong> = No Freckles
+          🟦 <strong>Shaded Blue</strong> = Trait Expressed (Recessive: <em>ff</em>)<br>
+          ⚪ <strong>Unshaded</strong> = Normal Trait
         </p>
       </div>
 
-      <!-- RIGHT SIDE: ANIMATED QUESTION PANEL -->
-      <div class="panel">
+      <!-- RIGHT SIDE: DYNAMIC QUESTION PANEL WITH GREEN/RED BORDER FX -->
+      <div class="panel" id="questionPanel">
         <div class="q-header">
           <span id="txtSquad">SQUAD: ---</span>
-          <span id="txtCase">CASE 1 / 5</span>
+          <span id="txtRoundBadge">ROUND 1 • Q1/2</span>
         </div>
 
-        <div class="q-title" id="txtQuestion">Loading question...</div>
+        <div class="q-title" id="txtQuestion">Loading case...</div>
         <div class="opts-grid" id="boxOptions"></div>
         <div class="feedback" id="txtFeedback"></div>
 
-        <button class="btn" onclick="submitAnswer()">SUBMIT ANALYSIS ⚡</button>
+        <button class="btn" onclick="submitAnswer()">SUBMIT ANSWER ⚡</button>
       </div>
 
     </div>
 
-    <!-- 3. FINISH SCREEN -->
+    <!-- 3. DRAMATIC VICTORY SCREEN -->
     <div class="finish-screen" id="sFinish">
-      <h2 style="color:var(--cyan); font-size:2.2rem; font-weight:900;">🏆 MISSION ACCOMPLISHED!</h2>
-      <p style="color:#94a3b8; margin: 0.5rem 0 1.5rem 0;">All genetic evidence has been successfully transmitted to HQ.</p>
-      <div style="font-size:4rem; margin-bottom:1rem;">🧬✨</div>
-      <h3 style="color:var(--green); font-size:1.5rem;" id="txtFinalTime">Total Time: 0m 0s</h3>
+      <div style="font-size:4rem;">🏆✨</div>
+      <h2 style="color:var(--gold); font-size:2.2rem; font-weight:900; margin-top:0.5rem;">VICTORY ACCOMPLISHED!</h2>
+      <p style="color:#94a3b8; margin: 0.5rem 0 1.5rem 0;">Your squad has decoded all 4 generations with full accuracy!</p>
+      <h3 style="color:var(--green); font-size:1.6rem;" id="txtFinalTime">Total Time: 0m 0s</h3>
     </div>
   </div>
 
@@ -223,41 +261,29 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // 10 QUESTIONS DISTRIBUTED ACROSS 4 ROUNDS
     const questions = [
-      {
-        gen: 1,
-        q: "1. SYMBOLS: Look at Generation I (Top). What do the SQUARE and CIRCLE shapes represent?",
-        opts: ["A. Square = Male | Circle = Female", "B. Circle = Male | Square = Female", "C. Both shapes mean Female"],
-        ans: "A"
-      },
-      {
-        gen: 1,
-        q: "2. RELATIONSHIPS: What does the horizontal line connecting Dad and Mom in Generation I mean?",
-        opts: ["A. They are brother and sister", "B. They are parents / married", "C. They are unrelated friends"],
-        ans: "B"
-      },
-      {
-        gen: 2,
-        q: "3. TRAITS: Look at Generation II (Bottom). How many offspring inherited the shaded freckles trait?",
-        opts: ["A. 1 Offspring", "B. 2 Offspring", "C. 3 Offspring"],
-        ans: "B"
-      },
-      {
-        gen: 2,
-        q: "4. GENOTYPES: Freckles in this family is a recessive trait (ff). What is the genotype of Son 1 (Shaded Square)?",
-        opts: ["A. FF (Dominant)", "B. Ff (Heterozygous)", "C. ff (Recessive Affected)"],
-        ans: "C"
-      },
-      {
-        gen: 2,
-        q: "5. PROBABILITY: If Mom (Ff) and Dad (Ff) have another child, what is the chance the child gets freckles (ff)?",
-        opts: ["A. 25% Chance (1 in 4)", "B. 50% Chance (2 in 4)", "C. 100% Chance"],
-        ans: "A"
-      }
+      // ROUND 1: GEN I (2 Questions)
+      { gen: 1, round: 1, qNum: "1/2", q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent in Generation I?", opts: ["A. Square = Male | Circle = Female", "B. Circle = Male | Square = Female", "C. Both are female"], ans: "A" },
+      { gen: 1, round: 1, qNum: "2/2", q: "R1-Q2 [Gen I]: Neither parent in Gen I is shaded. Can they carry a hidden recessive allele?", opts: ["A. Yes, they can be Heterozygous (Ff)", "B. No, unshaded means 100% dominant (FF)", "C. It is impossible to tell"], ans: "A" },
+
+      // ROUND 2: GEN II (3 Questions)
+      { gen: 2, round: 2, qNum: "1/3", q: "R2-Q1 [Gen II]: Son 1 in Gen II is shaded blue. What is his exact genotype?", opts: ["A. FF (Dominant)", "B. Ff (Heterozygous)", "C. ff (Recessive Affected)"], ans: "C" },
+      { gen: 2, round: 2, qNum: "2/3", q: "R2-Q2 [Gen II]: Since Son 1 has genotype 'ff', what MUST be the genotypes of Gen I Parents?", opts: ["A. Both must be Ff", "B. Both must be FF", "C. One FF and one ff"], ans: "A" },
+      { gen: 2, round: 2, qNum: "3/3", q: "R2-Q3 [Gen II]: Daughter 1 in Gen II marries an unshaded male. What is the connector line called?", opts: ["A. Marriage / Mating Line", "B. Descent Line", "C. Sibship Line"], ans: "A" },
+
+      // ROUND 3: GEN III (3 Questions)
+      { gen: 3, round: 3, qNum: "1/3", q: "R3-Q1 [Gen III]: Daughter in Gen III is shaded blue (ff). Where did she inherit her 2 'f' alleles?", opts: ["A. 1 from Gen II Mother, 1 from Gen II Father", "B. Both from Gen II Mother", "C. Both from Gen II Father"], ans: "A" },
+      { gen: 3, round: 3, qNum: "2/3", q: "R3-Q2 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", opts: ["A. 50% Chance", "B. 25% Chance", "C. 0% Chance"], ans: "A" },
+      { gen: 3, round: 3, qNum: "3/3", q: "R3-Q3 [Gen III]: What is the carrier probability for any unshaded sibling in Gen III?", opts: ["A. 66% (2 out of 3)", "B. 25%", "C. 100%"], ans: "A" },
+
+      // ROUND 4: GEN IV Problem Solving (2 Questions)
+      { gen: 4, round: 4, qNum: "1/2", q: "R4-Q1 [Gen IV]: Gen IV child is shaded (ff). If her parents have another child, what is the chance of a NORMAL child?", opts: ["A. 50% Chance (1 in 2)", "B. 75% Chance", "C. 25% Chance"], ans: "A" },
+      { gen: 4, round: 4, qNum: "2/2", q: "R4-Q2 [Gen IV - FINAL]: Complete Pedigree Verdict! Is this trait Autosomal Dominant or Autosomal Recessive?", opts: ["A. Autosomal Recessive (Skips Gen I, appears in offspring)", "B. Autosomal Dominant", "C. Sex-Linked Y-Trait"], ans: "A" }
     ];
 
     let teamName = "";
-    let stage = 0;
+    let idx = 0;
     let selectedAns = null;
     let startTime = 0;
 
@@ -266,9 +292,9 @@
       if (!teamName) return alert("Please enter a Squad Name!");
 
       startTime = Date.now();
-      db.ref('teams/' + teamName).set({ team: teamName, stage: 1, status: "Active", timeElapsed: 0 });
+      db.ref('teams/' + teamName).set({ team: teamName, stage: 1, round: 1, status: "Active", timeElapsed: 0 });
 
-      document.getElementById('txtSquad').textContent = `SQUAD: ${teamName}`;
+      document.getElementById('txtSquad').textContent = `SQUAD: ${teamName.toUpperCase()}`;
       document.getElementById('sLogin').style.display = 'none';
       document.getElementById('sGame').classList.add('active');
       loadQuestion();
@@ -277,9 +303,10 @@
     function loadQuestion() {
       selectedAns = null;
       document.getElementById('txtFeedback').textContent = "";
-      const q = questions[stage];
+      const q = questions[idx];
 
-      document.getElementById('txtCase').textContent = `CASE ${stage + 1} / 5`;
+      document.getElementById('txtRoundBadge').textContent = `ROUND ${q.round} • Q${q.qNum}`;
+      document.getElementById('txtGenBadge').textContent = `GEN ${['I','II','III','IV'][q.gen - 1]} ACTIVE`;
       document.getElementById('txtQuestion').textContent = q.q;
 
       // Highlight active Generation on SVG
@@ -304,34 +331,58 @@
     }
 
     function submitAnswer() {
+      const panel = document.getElementById('questionPanel');
       const fb = document.getElementById('txtFeedback');
+      
       if (!selectedAns) {
         fb.className = "feedback err";
         fb.textContent = "⚠️ Select an answer choice first!";
         return;
       }
 
-      if (selectedAns === questions[stage].ans) {
+      if (selectedAns === questions[idx].ans) {
+        // Correct Answer Effects
+        panel.classList.remove('wrong-border');
+        panel.classList.add('correct-border');
         fb.className = "feedback ok";
-        fb.textContent = "✅ Correct! Advancing case...";
-        stage++;
+        fb.textContent = "✨ EXCELLENT! CORRECT ANALYSIS!";
+
+        // Confetti burst on correct answer
+        confetti({ particleCount: 30, spread: 60, origin: { y: 0.7 } });
+
+        idx++;
         let elapsed = Math.floor((Date.now() - startTime) / 1000);
 
-        if (stage >= questions.length) {
-          db.ref('teams/' + teamName).update({ stage: 5, status: "Finished", timeElapsed: elapsed });
+        if (idx >= questions.length) {
+          // Finished Game
+          db.ref('teams/' + teamName).update({ stage: 10, round: 4, status: "Finished", timeElapsed: elapsed });
           setTimeout(() => {
+            panel.classList.remove('correct-border');
             document.getElementById('sGame').classList.remove('active');
             document.getElementById('sFinish').style.display = 'block';
             let m = Math.floor(elapsed / 60), s = elapsed % 60;
             document.getElementById('txtFinalTime').textContent = `Total Time: ${m}m ${s}s`;
-          }, 600);
+            
+            // Grand Victory Confetti Cannon
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+          }, 800);
         } else {
-          db.ref('teams/' + teamName).update({ stage: stage + 1, status: "Active", timeElapsed: elapsed });
-          setTimeout(loadQuestion, 600);
+          let currentRound = questions[idx].round;
+          db.ref('teams/' + teamName).update({ stage: idx + 1, round: currentRound, status: "Active", timeElapsed: elapsed });
+          setTimeout(() => {
+            panel.classList.remove('correct-border');
+            loadQuestion();
+          }, 800);
         }
+
       } else {
+        // Incorrect Answer Effects
+        panel.classList.remove('correct-border');
+        panel.classList.add('wrong-border');
         fb.className = "feedback err";
-        fb.textContent = "❌ Incorrect analysis! Re-evaluate the pedigree.";
+        fb.textContent = "❌ INCORRECT! RE-EVALUATE THE GENETICS EVIDENCE.";
+        
+        setTimeout(() => panel.classList.remove('wrong-border'), 800);
       }
     }
   </script>
