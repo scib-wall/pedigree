@@ -327,10 +327,7 @@
             }
           }, 200);
         } else {
-          resetGame();
           document.getElementById('overlayCountdown').style.display = 'none';
-          document.getElementById('sWaiting').style.display = 'none';
-          document.getElementById('sGame').classList.remove('active');
           document.getElementById('txtWaitStatus').textContent = "Waiting for Host to start the race...";
         }
       });
