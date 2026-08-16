@@ -3,153 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Genetics Field Agent Terminal 🔬</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Genetics Field Terminal 🔬</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
-  
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: rgba(17, 24, 39, 0.9);
-      --card-border: rgba(99, 102, 241, 0.3);
-      --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.4);
-      --text: #f3f4f6;
-      --muted: #9ca3af;
-      --success: #10b981;
-      --danger: #f43f5e;
+      --bg: #0d1117;
+      --card-bg: rgba(22, 27, 34, 0.95);
+      --border: rgba(56, 189, 248, 0.3);
+      --cyan: #38bdf8;
+      --green: #22c55e;
+      --red: #f43f5e;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--bg); color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1rem; }
+    .container { width: 100%; max-width: 480px; }
+    
+    .screen { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem; display: none; flex-direction: column; gap: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .screen.active { display: flex; }
 
-    body {
-      background: radial-gradient(circle at center, #111827 0%, #030712 100%);
-      color: var(--text); min-height: 100vh;
-      display: flex; justify-content: center; align-items: center;
-      padding: 1rem; overflow-x: hidden;
-    }
+    h2 { color: var(--cyan); font-size: 1.4rem; font-weight: 800; text-align: center; }
+    p { font-size: 0.9rem; color: #9ca3af; line-height: 1.4; }
 
-    .container {
-      width: 100%; max-width: 540px;
-      position: relative;
-    }
-
-    /* Registration Screen */
-    .screen {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      border-radius: 24px; padding: 2rem; backdrop-filter: blur(16px);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-      display: none; flex-direction: column; gap: 1.2rem;
-    }
-    .screen.active { display: flex; animation: fadeIn 0.4s ease; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    h2 { font-weight: 900; font-size: 1.5rem; color: var(--accent); letter-spacing: -0.5px; }
-    p { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
-
-    input[type="text"] {
-      width: 100%; background: rgba(0,0,0,0.4); border: 2px solid var(--card-border);
-      border-radius: 14px; padding: 1rem; color: white; font-weight: 700; font-size: 1rem;
-      outline: none; transition: border 0.2s;
-    }
-    input[type="text"]:focus { border-color: var(--accent); }
-
-    .btn {
-      background: linear-gradient(135deg, #38bdf8, #6366f1);
-      color: #000; font-weight: 900; font-size: 1rem; padding: 1rem;
-      border: none; border-radius: 14px; cursor: pointer;
-      box-shadow: 0 4px 20px var(--accent-glow); transition: all 0.2s;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
+    input { width: 100%; background: #000; border: 1px solid var(--border); padding: 0.8rem; border-radius: 10px; color: #fff; font-size: 1rem; text-align: center; font-weight: 700; }
+    
+    .btn { background: var(--cyan); color: #000; font-weight: 800; padding: 0.9rem; border: none; border-radius: 12px; cursor: pointer; font-size: 0.95rem; text-transform: uppercase; }
     .btn:active { transform: scale(0.98); }
 
-    /* Question Screen Visuals */
-    .status-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;
-    }
+    .diagram { background: #000; border: 1px solid var(--border); padding: 0.8rem; border-radius: 10px; font-family: monospace; font-size: 0.85rem; text-align: center; color: var(--cyan); white-space: pre; }
 
-    .q-text { font-size: 1.05rem; font-weight: 800; line-height: 1.4; color: #fff; }
+    .opt-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 10px; color: #fff; font-size: 0.9rem; font-weight: 700; text-align: left; cursor: pointer; }
+    .opt-btn.selected { background: rgba(56, 189, 248, 0.25); border-color: var(--cyan); }
 
-    .options-grid { display: flex; flex-direction: column; gap: 0.8rem; margin: 0.5rem 0; }
-
-    .opt-btn {
-      background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 14px; padding: 0.9rem 1.1rem; color: #fff; font-weight: 700;
-      font-size: 0.92rem; text-align: left; cursor: pointer; transition: all 0.2s;
-      display: flex; align-items: center; gap: 0.8rem;
-    }
-    .opt-btn:hover { background: rgba(56, 189, 248, 0.08); border-color: var(--accent); }
-    .opt-btn.selected { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-
-    .feedback {
-      font-size: 0.85rem; font-weight: 800; text-align: center; min-height: 1.2rem;
-    }
-    .feedback.err { color: var(--danger); animation: shake 0.3s; }
-    .feedback.ok { color: var(--success); }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      75% { transform: translateX(6px); }
-    }
-
-    .pedigree-box {
-      background: #000; border: 1px solid var(--card-border); border-radius: 12px;
-      padding: 0.8rem; font-family: monospace; font-size: 0.75rem; color: #38bdf8;
-      white-space: pre; overflow-x: auto; line-height: 1.2; text-align: center;
-    }
+    .feedback { font-size: 0.85rem; font-weight: 800; text-align: center; min-height: 1.2rem; }
+    .feedback.err { color: var(--red); }
+    .feedback.ok { color: var(--green); }
   </style>
-
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
   <div class="container">
-
-    <!-- LOGIN SCREEN -->
-    <div class="screen active" id="loginScreen">
-      <h2>🧬 FIELD AGENT LOGIN</h2>
-      <p>Enter your Squad / Team Name to connect to Genetics Command HQ.</p>
-      <input type="text" id="teamInput" placeholder="e.g. Helix Hunters" maxlength="20">
-      <button class="btn" onclick="registerTeam()">INITIALIZE TERMINAL 🚀</button>
+    <!-- LOGIN -->
+    <div class="screen active" id="sLogin">
+      <h2>🧬 SQUAD LOGIN</h2>
+      <p style="text-align:center;">Enter your group name to start the Genetics Challenge!</p>
+      <input type="text" id="teamInput" placeholder="Team Name (e.g. Bio Squad)" maxlength="15">
+      <button class="btn" onclick="startApp()">START MISSION 🚀</button>
     </div>
 
-    <!-- QUESTION SCREEN -->
-    <div class="screen" id="qScreen">
-      <div class="status-bar">
-        <span id="squadBadge">SQUAD: ---</span>
-        <span id="stageBadge">CASE 1 / 5</span>
+    <!-- QUIZ -->
+    <div class="screen" id="sQuiz">
+      <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:800; color:var(--cyan);">
+        <span id="txtSquad">SQUAD</span>
+        <span id="txtStage">Q1 / 5</span>
       </div>
 
-      <div class="pedigree-box" id="pedigreeDisplay">
-  [GEN 1]  (⬛ Male Affected)  ---  (◯ Female Carrier)
-                   |
-  [GEN 2]     +----+----+
-              |         |
-           (⬜ Male)  (● Female Affected)
-      </div>
+      <div class="diagram" id="dDiagram">---</div>
+      <div style="font-weight:700; font-size:0.95rem;" id="qText">Loading question...</div>
+      <div id="optsBox" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+      <div class="feedback" id="fbText"></div>
 
-      <div class="q-text" id="qText">Question text loading...</div>
-
-      <div class="options-grid" id="optionsContainer"></div>
-
-      <div class="feedback" id="feedbackText"></div>
-
-      <button class="btn" id="submitBtn" onclick="processSubmission()">SUBMIT ANALYSIS ⚡</button>
+      <button class="btn" onclick="checkAnswer()">SUBMIT ANSWER ⚡</button>
     </div>
 
-    <!-- FINISH SCREEN -->
-    <div class="screen" id="finishScreen">
-      <h2>🏆 MISSION COMPLETED</h2>
-      <p>Your genetics intel has been transmitted to Command HQ!</p>
-      <div style="font-size: 2.5rem; text-align: center; margin: 1rem 0;">🧬✨</div>
-      <p style="text-align: center; font-weight: 800; color: var(--success);" id="finalTimeText">Time: --:--</p>
+    <!-- FINISH -->
+    <div class="screen" id="sFinish" style="text-align:center;">
+      <h2>🏆 MISSION COMPLETED!</h2>
+      <p>Great job! You have successfully solved all 5 genetics cases.</p>
+      <div style="font-size:3rem; margin:1rem 0;">🧬✨</div>
+      <p style="color:var(--green); font-weight:800;" id="txtTime">Time: 0m 0s</p>
     </div>
-
   </div>
 
   <script>
@@ -160,174 +84,116 @@
       projectId: "pedigree-9f98c",
       storageBucket: "pedigree-9f98c.firebasestorage.app",
       messagingSenderId: "484562688449",
-      appId: "1:484562688449:web:ca050a92acdfcb0b183740",
-      measurementId: "G-RXF33ECWTL"
+      appId: "1:484562688449:web:ca050a92acdfcb0b183740"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // 5 Challenging Genetics Questions for 5-Minute Round
-    const questions = [
+    const quiz = [
       {
-        q: "1. Based on the pedigree chart above, an affected father (⬛) and a carrier mother (◯) have children. What is the mode of inheritance if daughters can be fully affected (●)?",
-        diagram: "  [P1] (⬛ X^a Y)  x  (◯ X^A X^a)\n             |\n     +-------+------+\n     |              |\n(⬜ X^A Y)    (● X^a X^a)",
-        opts: [
-          { key: "A", txt: "Autosomal Dominant" },
-          { key: "B", txt: "X-Linked Recessive" },
-          { key: "C", txt: "Y-Linked Traits Only" }
-        ],
-        ans: "B"
-      },
-      {
-        q: "2. Two unaffected parents have a child with Cystic Fibrosis (Autosomal Recessive, 'c'). What are the exact genotypes of both parents?",
-        diagram: "   (⬜ Healthy Father)  x  (◯ Healthy Mother)\n                  |\n          (⬛ Child with CF: cc)",
-        opts: [
-          { key: "A", txt: "Father: CC | Mother: cc" },
-          { key: "B", txt: "Both parents are Heterozygous Carriers (Cc)" },
-          { key: "C", txt: "Father: Cc | Mother: CC" }
-        ],
-        ans: "B"
-      },
-      {
-        q: "3. If two carrier parents (Cc x Cc) have a HEALTHY unaffected child, what is the probability that this child is a carrier (Cc)?",
-        diagram: "Cross: Cc x Cc  -->  Punnett: CC (25%), Cc (50%), cc (25%)\nNote: The child is KNOWN to be healthy (not cc).",
-        opts: [
-          { key: "A", txt: "50% (2/4)" },
-          { key: "B", txt: "66.7% (2/3)" },
-          { key: "C", txt: "75% (3/4)" }
-        ],
-        ans: "B"
-      },
-      {
-        q: "4. A mother with Hemophilia (X^h X^h) has children with a normal father (X^H Y). What percentage of their SONS will have Hemophilia?",
-        diagram: "Mother: X^h X^h  x  Father: X^H Y\nSons inherit Y from Father and X^h from Mother.",
-        opts: [
-          { key: "A", txt: "100% of Sons" },
-          { key: "B", txt: "50% of Sons" },
-          { key: "C", txt: "0% of Sons" }
-        ],
+        q: "1. SYMBOLS: In a pedigree chart, what shape represents a MALE and what represents a FEMALE?",
+        diagram: "⬜ = Male       ◯ = Female\n⬛ = Affected   ● = Affected",
+        opts: ["A. Square = Male, Circle = Female", "B. Circle = Male, Square = Female", "C. Both shapes mean Male"],
         ans: "A"
       },
       {
-        q: "5. FINAL CASE: In a pedigree showing Huntington's Disease (Autosomal Dominant 'H'), an affected heterozygous person (Hh) marries a healthy person (hh). What percent of offspring inherit HD?",
-        diagram: "Cross: Hh  x  hh\nCalculate the phenotype ratio for affected offspring.",
-        opts: [
-          { key: "A", txt: "25% Affected" },
-          { key: "B", txt: "50% Affected" },
-          { key: "C", txt: "100% Affected" }
-        ],
+        q: "2. RELATIONSHIPS: What does a horizontal line directly connecting a square and circle mean?",
+        diagram: "  (⬜ Dad) --------- (◯ Mom)\n               |\n           (⬜ Son)",
+        opts: ["A. They are brother and sister", "B. They are parents / married", "C. They are twins"],
         ans: "B"
+      },
+      {
+        q: "3. TRAITS: In this pedigree, SHADED shapes (⬛/●) have Freckles. How many total offspring have freckles?",
+        diagram: "   (⬜) --- (◯)\n         |\n  +------+------+---\n  |      |      |\n (⬛)   (◯)    (●)",
+        opts: ["A. 1 offspring", "B. 2 offspring", "C. 3 offspring"],
+        ans: "B"
+      },
+      {
+        q: "4. GENOTYPES: Having Freckles (F) is dominant over No Freckles (f). If a child has NO freckles, what is their genotype?",
+        diagram: "Dominant:   F (Freckles)\nRecessive:  f (No Freckles)\nChild: Unshaded shape (no freckles)",
+        opts: ["A. FF", "B. Ff", "C. ff"],
+        ans: "C"
+      },
+      {
+        q: "5. CHANCES: Two heterozygous parents (Ff x Ff) have a child. What is the chance the child gets NO freckles (ff)?",
+        diagram: "Punnett Square (Ff x Ff):\nFF (25%)  |  Ff (50%)  |  ff (25%)",
+        opts: ["A. 25% chance", "B. 50% chance", "C. 100% chance"],
+        ans: "A"
       }
     ];
 
-    let currentTeam = "";
-    let currentStage = 0; // 0 to 4
-    let selectedOptionKey = null;
-    let startTime = null;
+    let team = "";
+    let qIdx = 0;
+    let selected = null;
+    let startTime = 0;
 
-    function registerTeam() {
-      const name = document.getElementById('teamInput').value.trim();
-      if (!name) { alert("Please enter a squad name!"); return; }
+    function startApp() {
+      team = document.getElementById('teamInput').value.trim();
+      if (!team) return alert("Please enter a Squad Name!");
 
-      currentTeam = name;
       startTime = Date.now();
+      db.ref('teams/' + team).set({ team: team, stage: 1, status: "Active", timeElapsed: 0 });
 
-      // Write to Firebase
-      db.ref('teams/' + currentTeam).set({
-        team: currentTeam,
-        stage: 1,
-        status: "In Field",
-        timeElapsed: 0
-      });
-
-      document.getElementById('squadBadge').textContent = `SQUAD: ${currentTeam}`;
-      showScreen('qScreen');
-      loadQuestion();
+      document.getElementById('txtSquad').textContent = `SQUAD: ${team}`;
+      document.getElementById('sLogin').classList.remove('active');
+      document.getElementById('sQuiz').classList.add('active');
+      loadQ();
     }
 
-    function loadQuestion() {
-      selectedOptionKey = null;
-      document.getElementById('feedbackText').textContent = "";
-      document.getElementById('feedbackText').className = "feedback";
-      
-      const qData = questions[currentStage];
-      document.getElementById('stageBadge').textContent = `CASE ${currentStage + 1} / 5`;
-      document.getElementById('qText').textContent = qData.q;
-      document.getElementById('pedigreeDisplay').textContent = qData.diagram;
+    function loadQ() {
+      selected = null;
+      document.getElementById('fbText').textContent = "";
+      const item = quiz[qIdx];
+      document.getElementById('txtStage').textContent = `Q${qIdx + 1} / 5`;
+      document.getElementById('dDiagram').textContent = item.diagram;
+      document.getElementById('qText').textContent = item.q;
 
-      const optsContainer = document.getElementById('optionsContainer');
-      optsContainer.innerHTML = "";
-
-      qData.opts.forEach(opt => {
-        const btn = document.createElement('button');
+      const box = document.getElementById('optsBox');
+      box.innerHTML = "";
+      item.opts.forEach((txt, i) => {
+        const key = String.fromCharCode(65 + i);
+        const btn = document.createElement('div');
         btn.className = "opt-btn";
-        btn.innerHTML = `<span style="color:var(--accent);">${opt.key}.</span> ${opt.txt}`;
-        btn.onclick = () => selectOption(opt.key, btn);
-        optsContainer.appendChild(btn);
+        btn.textContent = txt;
+        btn.onclick = () => {
+          selected = key;
+          document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        };
+        box.appendChild(btn);
       });
     }
 
-    function selectOption(key, element) {
-      selectedOptionKey = key;
-      document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-      element.classList.add('selected');
-      document.getElementById('feedbackText').textContent = "";
-    }
-
-    function processSubmission() {
-      const fb = document.getElementById('feedbackText');
-      
-      if (!selectedOptionKey) {
-        fb.textContent = "⚠️ SELECT AN OPTION FIRST BEFORE SUBMITTING!";
+    function checkAnswer() {
+      const fb = document.getElementById('fbText');
+      if (!selected) {
         fb.className = "feedback err";
+        fb.textContent = "⚠️ Click an answer option above first!";
         return;
       }
 
-      const qData = questions[currentStage];
-
-      if (selectedOptionKey === qData.ans) {
-        fb.textContent = "✅ CORRECT ANALYSIS! ADVANCING...";
+      if (selected === quiz[qIdx].ans) {
         fb.className = "feedback ok";
+        fb.textContent = "✅ Correct!";
+        qIdx++;
+        let elapsed = Math.floor((Date.now() - startTime) / 1000);
 
-        currentStage++;
-        const elapsedSecs = Math.floor((Date.now() - startTime) / 1000);
-
-        if (currentStage >= questions.length) {
-          // Finished
-          db.ref('teams/' + currentTeam).update({
-            stage: 5,
-            status: "Completed",
-            timeElapsed: elapsedSecs
-          });
-
+        if (qIdx >= quiz.length) {
+          db.ref('teams/' + team).update({ stage: 5, status: "Finished", timeElapsed: elapsed });
           setTimeout(() => {
-            let mins = Math.floor(elapsedSecs / 60);
-            let secs = elapsedSecs % 60;
-            document.getElementById('finalTimeText').textContent = `TOTAL TIME: ${mins}m ${secs}s`;
-            showScreen('finishScreen');
-          }, 600);
-
+            document.getElementById('sQuiz').classList.remove('active');
+            document.getElementById('sFinish').classList.add('active');
+            let m = Math.floor(elapsed / 60), s = elapsed % 60;
+            document.getElementById('txtTime').textContent = `Time: ${m}m ${s}s`;
+          }, 500);
         } else {
-          // Next question update
-          db.ref('teams/' + currentTeam).update({
-            stage: currentStage + 1,
-            status: "In Field",
-            timeElapsed: elapsedSecs
-          });
-
-          setTimeout(loadQuestion, 600);
+          db.ref('teams/' + team).update({ stage: qIdx + 1, status: "Active", timeElapsed: elapsed });
+          setTimeout(loadQ, 500);
         }
-
       } else {
-        fb.textContent = "❌ INCORRECT GENETIC ANALYSIS. RE-EVALUATE THE PEDIGREE!";
         fb.className = "feedback err";
+        fb.textContent = "❌ Not quite! Try another choice.";
       }
-    }
-
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
     }
   </script>
 </body>
