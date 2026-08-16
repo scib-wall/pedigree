@@ -68,14 +68,17 @@
       border-radius: 12px; padding: 0.9rem 1rem; color: #fff; font-weight: 700; font-size: 0.95rem;
       text-align: left; cursor: pointer; transition: all 0.2s;
     }
-    .opt-btn:hover { background: rgba(56, 189, 248, 0.12); border-color: var(--cyan); }
+    .opt-btn:hover:not(:disabled) { background: rgba(56, 189, 248, 0.12); border-color: var(--cyan); }
     .opt-btn.selected { background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.3)); border-color: var(--cyan); }
+    .opt-btn:disabled { cursor: not-allowed; opacity: 0.5; }
 
     .btn {
       background: linear-gradient(135deg, var(--cyan), var(--indigo));
       color: #000; font-weight: 900; padding: 1rem; border: none; border-radius: 12px;
       cursor: pointer; font-size: 1rem; text-transform: uppercase;
+      transition: all 0.2s ease;
     }
+    .btn:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
 
     .timer-badge { font-size: 1.1rem; font-weight: 900; color: var(--gold); background: rgba(245, 158, 11, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--gold); }
     .timer-badge.warning { color: var(--red); border-color: var(--red); background: rgba(244, 63, 94, 0.15); animation: shake 0.5s infinite; }
@@ -91,58 +94,58 @@
     <div class="login-box" id="sLogin">
       <h2 style="color:var(--cyan); font-size: 1.8rem; font-weight: 900;">🧬 5-MIN SPEED RUN</h2>
       <p style="color:#94a3b8; font-size: 0.9rem; margin-top: 0.4rem;">4 Generations • 5 Questions • 300 Seconds</p>
-      <input type="text" id="teamInput" placeholder="Enter Squad Name..." maxlength="15">
-      <button class="btn" style="width:100%;" onclick="startSession()">START 5-MIN RUN 🚀</button>
+      <input type="text" id="teamInput" placeholder="Enter Squad Name..." maxlength="15" aria-label="Enter Squad Name">
+      <button class="btn" style="width:100%;" onclick="startSession()" aria-label="Start 5 Minute Speed Run">START 5-MIN RUN 🚀</button>
     </div>
 
     <div class="app-layout" id="sGame">
       <div class="panel">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <h3 style="font-size: 1.1rem; color: var(--cyan); font-weight: 800;">🔬 4-GEN PEDIGREE</h3>
-          <span class="timer-badge" id="txtTimer">⏱️ 05:00</span>
+          <span class="timer-badge" id="txtTimer" aria-label="Remaining time timer">⏱️ 05:00</span>
         </div>
 
         <div class="pedigree-wrapper">
-          <svg viewBox="0 0 320 280">
-            <g class="gen-group" id="gen1">
+          <svg viewBox="0 0 320 280" role="img" aria-label="Interactive 4-generation pedigree chart">
+            <g class="gen-group" id="gen1" aria-label="Generation 1: Unaffected Father and Unaffected Mother">
               <text x="5" y="30" fill="#64748b" font-size="10" font-weight="800">GEN I</text>
               <line x1="80" y1="25" x2="140" y2="25" class="line" />
-              <rect x="55" y="10" width="25" height="25" class="symbol" />
-              <circle cx="155" cy="22" r="13" class="symbol" />
+              <rect x="55" y="10" width="25" height="25" class="symbol" role="img" aria-label="Generation 1 Male, Unaffected" />
+              <circle cx="155" cy="22" r="13" class="symbol" role="img" aria-label="Generation 1 Female, Unaffected" />
             </g>
 
             <line x1="110" y1="25" x2="110" y2="65" class="line" />
             <line x1="60" y1="65" x2="220" y2="65" class="line" />
 
-            <g class="gen-group" id="gen2">
+            <g class="gen-group" id="gen2" aria-label="Generation 2: Affected Son, Unaffected Daughter and Partner">
               <text x="5" y="100" fill="#64748b" font-size="10" font-weight="800">GEN II</text>
               <line x1="60" y1="65" x2="60" y2="90" class="line" />
               <line x1="220" y1="65" x2="220" y2="90" class="line" />
-              <rect x="48" y="90" width="25" height="25" class="symbol affected" />
-              <circle cx="220" cy="102" r="13" class="symbol" />
+              <rect x="48" y="90" width="25" height="25" class="symbol affected" role="img" aria-label="Generation 2 Male, Affected" />
+              <circle cx="220" cy="102" r="13" class="symbol" role="img" aria-label="Generation 2 Female, Unaffected" />
               <line x1="233" y1="102" x2="270" y2="102" class="line" />
-              <rect x="270" y="90" width="25" height="25" class="symbol" />
+              <rect x="270" y="90" width="25" height="25" class="symbol" role="img" aria-label="Generation 2 Male Partner, Unaffected" />
             </g>
 
             <line x1="250" y1="102" x2="250" y2="145" class="line" />
             <line x1="180" y1="145" x2="280" y2="145" class="line" />
 
-            <g class="gen-group" id="gen3">
+            <g class="gen-group" id="gen3" aria-label="Generation 3: Affected Daughter, Partner, Unaffected Son">
               <text x="5" y="175" fill="#64748b" font-size="10" font-weight="800">GEN III</text>
               <line x1="180" y1="145" x2="180" y2="165" class="line" />
               <line x1="280" y1="145" x2="280" y2="165" class="line" />
-              <circle cx="180" cy="178" r="13" class="symbol affected" />
-              <rect x="268" y="165" width="25" height="25" class="symbol" />
+              <circle cx="180" cy="178" r="13" class="symbol affected" role="img" aria-label="Generation 3 Female, Affected" />
+              <rect x="268" y="165" width="25" height="25" class="symbol" role="img" aria-label="Generation 3 Male, Unaffected" />
               <line x1="193" y1="178" x2="225" y2="178" class="line" />
-              <rect x="225" y="165" width="25" height="25" class="symbol" />
+              <rect x="225" y="165" width="25" height="25" class="symbol" role="img" aria-label="Generation 3 Male Partner, Unaffected" />
             </g>
 
             <line x1="209" y1="178" x2="209" y2="220" class="line" />
 
-            <g class="gen-group" id="gen4">
+            <g class="gen-group" id="gen4" aria-label="Generation 4: Affected Daughter">
               <text x="5" y="248" fill="#64748b" font-size="10" font-weight="800">GEN IV</text>
               <line x1="209" y1="220" x2="209" y2="238" class="line" />
-              <circle cx="209" cy="250" r="13" class="symbol affected" />
+              <circle cx="209" cy="250" r="13" class="symbol affected" role="img" aria-label="Generation 4 Female, Affected" />
             </g>
           </svg>
         </div>
@@ -158,7 +161,7 @@
         <div class="opts-grid" id="boxOptions"></div>
         <div style="min-height:1.5rem; font-weight:800; text-align:center;" id="txtFeedback"></div>
 
-        <button class="btn" onclick="submitAnswer()">SUBMIT ANSWER ⚡</button>
+        <button class="btn" id="btnSubmit" onclick="submitAnswer()" aria-label="Submit Answer">SUBMIT ANSWER ⚡</button>
       </div>
     </div>
 
@@ -167,6 +170,7 @@
       <h2 style="color:var(--gold); font-size:2rem; font-weight:900;" id="txtFinishTitle">MISSION COMPLETE!</h2>
       <p style="color:#94a3b8; margin: 0.5rem 0 1.5rem 0;" id="txtFinishSub">You successfully decoded the 4 generations!</p>
       <h3 style="color:var(--green); font-size:1.5rem;" id="txtFinalTime">Remaining Time: --:--</h3>
+      <button class="btn" style="margin-top: 1.5rem; padding: 1rem 2rem;" onclick="resetGame()" aria-label="Play Again">PLAY AGAIN 🔄</button>
     </div>
   </div>
 
@@ -184,11 +188,36 @@
     const db = firebase.database();
 
     const questions = [
-      { gen: 1, round: 1, qNum: "1/5", q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent?", opts: ["A. Square = Male | Circle = Female", "B. Circle = Male | Square = Female"], ans: "A" },
-      { gen: 2, round: 2, qNum: "2/5", q: "R2-Q2 [Gen II]: Son 1 is shaded blue (ff). What MUST be the genotypes of unshaded parents in Gen I?", opts: ["A. Both are Heterozygous (Ff)", "B. Both are Dominant (FF)"], ans: "A" },
-      { gen: 3, round: 3, qNum: "3/5", q: "R3-Q3 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", opts: ["A. 50% Chance", "B. 25% Chance"], ans: "A" },
-      { gen: 4, round: 4, qNum: "4/5", q: "R4-Q4 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", opts: ["A. 75% Chance", "B. 25% Chance"], ans: "A" },
-      { gen: 4, round: 4, qNum: "5/5", q: "R4-Q5 [FINAL]: Is this pedigree Autosomal Recessive or Autosomal Dominant?", opts: ["A. Autosomal Recessive (Skips Gen I)", "B. Autosomal Dominant"], ans: "A" }
+      { 
+        gen: 1, round: 1, qNum: "1/5", 
+        q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent?", 
+        opts: ["A. Square = Male | Circle = Female", "B. Circle = Male | Square = Female", "C. Square = Affected | Circle = Carrier"], 
+        ans: "A" 
+      },
+      { 
+        gen: 2, round: 2, qNum: "2/5", 
+        q: "R2-Q2 [Gen II]: Son 1 is shaded blue (ff). What MUST be the genotypes of unshaded parents in Gen I?", 
+        opts: ["A. Both are Heterozygous (Ff)", "B. Both are Dominant (FF)", "C. One is (FF), One is (ff)"], 
+        ans: "A" 
+      },
+      { 
+        gen: 3, round: 3, qNum: "3/5", 
+        q: "R3-Q3 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", 
+        opts: ["A. 50% Chance", "B. 25% Chance", "C. 75% Chance"], 
+        ans: "A" 
+      },
+      { 
+        gen: 4, round: 4, qNum: "4/5", 
+        q: "R4-Q4 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", 
+        opts: ["A. 75% Chance", "B. 25% Chance", "C. 100% Chance"], 
+        ans: "A" 
+      },
+      { 
+        gen: 4, round: 4, qNum: "5/5", 
+        q: "R4-Q5 [FINAL]: Is this pedigree Autosomal Recessive or Autosomal Dominant?", 
+        opts: ["A. Autosomal Recessive (Skips Gen I)", "B. Autosomal Dominant", "C. X-Linked Dominant"], 
+        ans: "A" 
+      }
     ];
 
     let teamName = "";
@@ -196,6 +225,7 @@
     let selectedAns = null;
     let timeLeft = 300; // 5 minutes in seconds
     let timerInterval = null;
+    let isLocked = false;
 
     function startSession() {
       teamName = document.getElementById('teamInput').value.trim();
@@ -246,7 +276,9 @@
         const btn = document.createElement('button');
         btn.className = "opt-btn";
         btn.textContent = txt;
+        btn.setAttribute('aria-label', `Option ${key}: ${txt}`);
         btn.onclick = () => {
+          if (isLocked) return;
           selectedAns = key;
           document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
           btn.classList.add('selected');
@@ -256,8 +288,11 @@
     }
 
     function submitAnswer() {
+      if (isLocked) return;
+
       const panel = document.getElementById('questionPanel');
       const fb = document.getElementById('txtFeedback');
+      const submitBtn = document.getElementById('btnSubmit');
 
       if (!selectedAns) {
         fb.style.color = "var(--red)";
@@ -284,11 +319,30 @@
           setTimeout(() => { panel.classList.remove('correct-border'); loadQuestion(); }, 600);
         }
       } else {
+        // LOCK SYSTEM FOR 10 SECONDS ON WRONG ANSWER
+        isLocked = true;
+        submitBtn.disabled = true;
+        document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
         panel.classList.remove('correct-border');
         panel.classList.add('wrong-border');
+
+        let penaltyTime = 10;
         fb.style.color = "var(--red)";
-        fb.textContent = "❌ INCORRECT! RE-EVALUATE.";
-        setTimeout(() => panel.classList.remove('wrong-border'), 600);
+        fb.textContent = `🔒 INCORRECT! SYSTEM LOCKED FOR ${penaltyTime}s`;
+
+        let penaltyInterval = setInterval(() => {
+          penaltyTime--;
+          if (penaltyTime > 0) {
+            fb.textContent = `🔒 INCORRECT! SYSTEM LOCKED FOR ${penaltyTime}s`;
+          } else {
+            clearInterval(penaltyInterval);
+            isLocked = false;
+            submitBtn.disabled = false;
+            document.querySelectorAll('.opt-btn').forEach(b => b.disabled = false);
+            panel.classList.remove('wrong-border');
+            fb.textContent = "⚠️ Re-evaluate and select carefully!";
+          }
+        }, 1000);
       }
     }
 
@@ -307,6 +361,27 @@
         document.getElementById('txtFinishSub').textContent = "5 minutes passed! Try again on the next speed run.";
         document.getElementById('txtFinalTime').textContent = `Reached Question ${idx + 1} of 5`;
       }
+    }
+
+    function resetGame() {
+      clearInterval(timerInterval);
+      idx = 0;
+      timeLeft = 300;
+      selectedAns = null;
+      isLocked = false;
+
+      const submitBtn = document.getElementById('btnSubmit');
+      if (submitBtn) submitBtn.disabled = false;
+
+      const badge = document.getElementById('txtTimer');
+      badge.textContent = "⏱️ 05:00";
+      badge.classList.remove('warning');
+
+      const panel = document.getElementById('questionPanel');
+      panel.classList.remove('correct-border', 'wrong-border');
+
+      document.getElementById('sFinish').style.display = 'none';
+      document.getElementById('sLogin').style.display = 'block';
     }
   </script>
 </body>
