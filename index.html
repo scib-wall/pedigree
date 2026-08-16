@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedigree Detective: The Generational Relay</title>
+  <!-- Google Fonts for crisp, modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES & BASE STYLES (Chic, Modern Color Palette)
+       ========================================================================== */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%);
+      --card-bg: #ffffff;
+      --primary: #6366f1;         /* Electric Indigo */
+      --primary-hover: #4f46e5;
+      --accent: #ec4899;          /* Chic Pink */
+      --accent-light: #fbcfe8;
+      --text-main: #1e1b4b;       /* Deep Navy */
+      --text-muted: #64748b;
+      --success: #10b981;        /* Mint Green */
+      --success-bg: #d1fae5;
+      --error: #f43f5e;          /* Coral Red */
+      --error-bg: #ffe4e6;
+      --border-color: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    /* ==========================================================================
+       2. HEADER & TIMER
+       ========================================================================== */
+    header {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card-bg);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .title-area h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .title-area p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .timer-badge {
+      background: #f1f5f9;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border: 2px solid var(--border-color);
+    }
+
+    .timer-badge.warning {
+      background: var(--error-bg);
+      border-color: var(--error);
+      color: var(--error);
+      animation: pulse 1s infinite;
+    }
+
+    /* ==========================================================================
+       3. MAIN LAYOUT (Split Screen Grid)
+       ========================================================================== */
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      flex-grow: 1;
+    }
+
+    @media (min-width: 850px) {
+      .container {
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================================================
+       4. LEFT PANEL: PEDIGREE CHART & LEGEND
+       ========================================================================== */
+    .pedigree-panel {
+      align-items: center;
+    }
+
+    .pedigree-panel h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      align-self: flex-start;
+      color: var(--text-main);
+    }
+
+    .svg-container {
+      width: 100%;
+      max-width: 450px;
+      background: #fafafa;
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      font-size: 0.8rem;
+      background: #f8fafc;
+      padding: 0.75rem;
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .legend-box {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #333;
+    }
+    .legend-box.circle { border-radius: 50%; }
+    .legend-box.shaded { background: #6366f1; border-color: #6366f1; }
+
+    /* ==========================================================================
+       5. RIGHT PANEL: INTERACTIVE RELAY STAGES
+       ========================================================================== */
+    .stage {
+      display: none;
+      flex-direction: column;
+      gap: 1.2rem;
+      height: 100%;
+    }
+
+    .stage.active {
+      display: flex;
+    }
+
+    .stage-header {
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 0.5rem;
+    }
+
+    .stage-header h3 {
+      font-size: 1.2rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stage-header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .question-block {
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .question-block p {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .option-btn {
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #f5f3ff;
+    }
+
+    /* Selection/State Classes */
+    .option-btn.selected {
+      border-color: var(--primary);
+      background: #e0e7ff;
+      font-weight: 700;
+    }
+
+    .question-block.correct {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .question-block.incorrect {
+      border-color: var(--error);
+      background: var(--error-bg);
+      animation: shake 0.4s ease;
+    }
+
+    .action-btn {
+      margin-top: auto;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.85rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    }
+
+    .action-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .action-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Input box for numeric answers */
+    .number-input {
+      width: 100%;
+      padding: 0.65rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+    }
+    .number-input:focus {
+      border-color: var(--primary);
+    }
+
+    /* ==========================================================================
+       6. VICTORY / OVERLAY SCREENS
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(30, 27, 75, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2.5rem;
+      border-radius: var(--radius);
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+    }
+
+    .modal-content h2 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-content p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .badge-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ==========================================================================
+       7. ANIMATIONS
+       ========================================================================== */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER: Title & Countdown Timer
+       ========================================================================== -->
+  <header>
+    <div class="title-area">
+      <h1>Pedigree Detective 🧬</h1>
+      <p>The Generational Relay Activity</p>
+    </div>
+    <div class="timer-badge" id="timerDisplay">
+      ⏱️ <span id="timeText">05:00</span>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN GAME GRID
+       ========================================================================== -->
+  <div class="container">
+    
+    <!-- LEFT SIDE: Pedigree Chart Exhibit -->
+    <div class="card pedigree-panel">
+      <h2>Exhibit A: The Purple-Tongue Family Tree</h2>
+      
+      <div class="svg-container">
+        <!-- SVG Pedigree Chart (3 Generations) -->
+        <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+          <!-- Generation Labels -->
+          <text x="5" y="45" font-weight="bold" fill="#6366f1" font-size="12">Gen I</text>
+          <text x="5" y="115" font-weight="bold" fill="#6366f1" font-size="12">Gen II</text>
+          <text x="5" y="185" font-weight="bold" fill="#6366f1" font-size="12">Gen III</text>
+
+          <!-- Lines (Connections) -->
+          <!-- Gen I Marriage line -->
+          <line x1="110" y1="40" x2="190" y2="40" stroke="#333" stroke-width="2"/>
+          <!-- Gen I to Gen II Drop line -->
+          <line x1="150" y1="40" x2="150" y2="75" stroke="#333" stroke-width="2"/>
+          <!-- Gen II Horizontal Branch line -->
+          <line x1="80" y1="75" x2="220" y2="75" stroke="#333" stroke-width="2"/>
+          <!-- Gen II Individual Drop lines -->
+          <line x1="80" y1="75" x2="80" y2="100" stroke="#333" stroke-width="2"/>
+          <line x1="220" y1="75" x2="220" y2="100" stroke="#333" stroke-width="2"/>
+
+          <!-- Gen II Marriage Line (II-2 and II-3) -->
+          <line x1="220" y1="115" x2="270" y2="115" stroke="#333" stroke-width="2"/>
+          <!-- Gen II to Gen III Drop line -->
+          <line x1="245" y1="115" x2="245" y2="150" stroke="#333" stroke-width="2"/>
+          <!-- Gen III Horizontal Branch line -->
+          <line x1="200" y1="150" x2="290" y2="150" stroke="#333" stroke-width="2"/>
+          <!-- Gen III Individual Drop lines -->
+          <line x1="200" y1="150" x2="200" y2="170" stroke="#333" stroke-width="2"/>
+          <line x1="290" y1="150" x2="290" y2="170" stroke="#333" stroke-width="2"/>
+
+          <!-- SHAPES & SYMBOLS -->
+          <!-- Gen I-1: Male (Square), Affected (Shaded) -->
+          <rect x="90" y="25" width="30" height="30" fill="#6366f1" stroke="#333" stroke-width="2"/>
+          <text x="100" y="20" font-size="10" fill="#666">I-1</text>
+
+          <!-- Gen I-2: Female (Circle), Unaffected (Clear) -->
+          <circle cx="205" cy="40" r="15" fill="#fff" stroke="#333" stroke-width="2"/>
+          <text x="200" y="20" font-size="10" fill="#666">I-2</text>
+
+          <!-- Gen II-1: Female (Circle), Unaffected -->
+          <circle cx="80" cy="115" r="15" fill="#fff" stroke="#333" stroke-width="2"/>
+          <text x="73" y="142" font-size="10" fill="#666">II-1</text>
+
+          <!-- Gen II-2: Male (Square), Unaffected -->
+          <rect x="205" y="100" width="30" height="30" fill="#fff" stroke="#333" stroke-width="2"/>
+          <text x="210" y="142" font-size="10" fill="#666">II-2</text>
+
+          <!-- Gen II-3: Female (Circle), Unaffected (Married into family) -->
+          <circle cx="270" cy="115" r="15" fill="#fff" stroke="#333" stroke-width="2"/>
+          <text x="263" y="142" font-size="10" fill="#666">II-3</text>
+
+          <!-- Gen III-1: Male (Square), Affected (Shaded) -->
+          <rect x="185" y="170" width="30" height="30" fill="#6366f1" stroke="#333" stroke-width="2"/>
+          <text x="188" y="212" font-size="10" fill="#666">III-1</text>
+
+          <!-- Gen III-2: Female (Circle), Unaffected -->
+          <circle cx="290" cy="185" r="15" fill="#fff" stroke="#333" stroke-width="2"/>
+          <text x="283" y="212" font-size="10" fill="#666">III-2</text>
+        </svg>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-box"></div> Male</div>
+        <div class="legend-item"><div class="legend-box circle"></div> Female</div>
+        <div class="legend-item"><div class="legend-box shaded"></div> Affected Trait</div>
+        <div class="legend-item"><div class="legend-box"></div> Unaffected</div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: Interactive Relay Form -->
+    <div class="card">
+      
+      <!-- ROUND 1 -->
+      <div class="stage active" id="stage1">
+        <div class="stage-header">
+          <h3>🚩 Round 1: Ancestor Basics (Gen I)</h3>
+          <p>Crack the symbols to unlock Round 2!</p>
+        </div>
+
+        <div class="question-block" id="q1_1_block">
+          <p>1. What does the square symbol represent in a pedigree?</p>
+          <div class="options" data-q="q1_1">
+            <button class="option-btn" data-val="A">A) Female</button>
+            <button class="option-btn" data-val="B">B) Male</button>
+            <button class="option-btn" data-val="C">C) Pet/Animal</button>
+          </div>
+        </div>
+
+        <div class="question-block" id="q1_2_block">
+          <p>2. Look at Person I-1. What does the shaded purple color mean?</p>
+          <div class="options" data-q="q1_2">
+            <button class="option-btn" data-val="A">A) They do NOT have the trait</button>
+            <button class="option-btn" data-val="B">B) They carry or have the trait</button>
+            <button class="option-btn" data-val="C">C) They are the youngest child</button>
+          </div>
+        </div>
+
+        <button class="action-btn" id="btnRound1" onclick="checkRound1()">Submit Round 1</button>
+      </div>
+
+      <!-- ROUND 2 -->
+      <div class="stage" id="stage2">
+        <div class="stage-header">
+          <h3>🚩 Round 2: Parent Clues (Gen II)</h3>
+          <p>Analyze how the trait gets passed down!</p>
+        </div>
+
+        <div class="question-block" id="q2_1_block">
+          <p>1. Neither parent in Gen II (II-2 & II-3) shows the purple tongue trait, but their son (III-1) HAS it! Is this trait dominant or recessive?</p>
+          <div class="options" data-q="q2_1">
+            <button class="option-btn" data-val="A">A) Dominant (Hides easily)</button>
+            <button class="option-btn" data-val="B">B) Recessive (Hides in parents, appears in kid)</button>
+          </div>
+        </div>
+
+        <div class="question-block" id="q2_2_block">
+          <p>2. Since parents II-2 and II-3 don't show the trait but passed it on, what MUST their genotype be? (T = normal, t = purple tongue)</p>
+          <div class="options" data-q="q2_2">
+            <button class="option-btn" data-val="A">A) TT (Homozygous Dominant)</button>
+            <button class="option-btn" data-val="B">B) Tt (Heterozygous Carriers)</button>
+            <button class="option-btn" data-val="C">C) tt (Homozygous Recessive)</button>
+          </div>
+        </div>
+
+        <button class="action-btn" id="btnRound2" onclick="checkRound2()">Submit Round 2</button>
+      </div>
+
+      <!-- ROUND 3 -->
+      <div class="stage" id="stage3">
+        <div class="stage-header">
+          <h3>🚩 Round 3: Offspring Predictions (Gen III)</h3>
+          <p>Calculate the probability to win the relay!</p>
+        </div>
+
+        <div class="question-block" id="q3_1_block">
+          <p>1. Parents II-2 and II-3 are both carriers (Tt). What is the percentage chance (%) that their NEXT child will have a purple tongue (tt)?</p>
+          <div style="margin-top: 0.5rem;">
+            <input type="number" class="number-input" id="q3_1_input" placeholder="Type percentage (e.g. 25)">
+          </div>
+        </div>
+
+        <button class="action-btn" id="btnRound3" onclick="checkRound3()">Cross Final Finish Line! 🏁</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       VICTORY MODAL OVERLAY
+       ========================================================================== -->
+  <div class="modal-overlay" id="victoryModal">
+    <div class="modal-content">
+      <div class="badge-icon">🏆</div>
+      <h2>Relay Completed!</h2>
+      <p>Awesome work, Detective Team! You mastered the pedigree chart!</p>
+      <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary); margin-bottom: 1.5rem;">
+        Time Taken: <span id="finalTime">00:00</span>
+      </div>
+      <button class="action-btn" style="width: 100%;" onclick="location.reload()">Play Again</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       GAME LOGIC & INTERACTION SCRIPT
+       ========================================================================== -->
+  <script>
+    // --- TIMER SYSTEM ---
+    let timeRemaining = 300; // 5 minutes in seconds
+    let timerInterval = null;
+    let secondsElapsed = 0;
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        secondsElapsed++;
+
+        let mins = Math.floor(timeRemaining / 60);
+        let secs = timeRemaining % 60;
+        
+        let formattedTime = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        document.getElementById('timeText').textContent = formattedTime;
+
+        // Warning state when less than 1 minute remains
+        if (timeRemaining <= 60) {
+          document.getElementById('timerDisplay').classList.add('warning');
+        }
+
+        // Time Out state
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          alert("⏱️ Time's up! Check with your team and refresh to try again!");
+        }
+      }, 1000);
+    }
+
+    // --- SELECTION SYSTEM ---
+    // Handle option button clicks
+    document.querySelectorAll('.options').forEach(group => {
+      group.addEventListener('click', (e) => {
+        if (e.target.classList.contains('option-btn')) {
+          // Deselect sisters in same group
+          group.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+          // Select clicked
+          e.target.classList.add('selected');
+        }
+      });
+    });
+
+    // --- ROUND VALIDATION LOGIC ---
+
+    // Utility: Helper to get selected value
+    function getSelectedValue(groupName) {
+      const group = document.querySelector(`.options[data-q="${groupName}"]`);
+      const selected = group.querySelector('.option-btn.selected');
+      return selected ? selected.getAttribute('data-val') : null;
+    }
+
+    // ROUND 1 CHECK
+    function checkRound1() {
+      const q1 = getSelectedValue('q1_1');
+      const q2 = getSelectedValue('q1_2');
+
+      let isQ1Correct = (q1 === 'B'); // Square = Male
+      let isQ2Correct = (q2 === 'B'); // Shaded = Has trait
+
+      updateBlockState('q1_1_block', isQ1Correct);
+      updateBlockState('q1_2_block', isQ2Correct);
+
+      if (isQ1Correct && isQ2Correct) {
+        setTimeout(() => {
+          document.getElementById('stage1').classList.remove('active');
+          document.getElementById('stage2').classList.add('active');
+        }, 600);
+      }
+    }
+
+    // ROUND 2 CHECK
+    function checkRound2() {
+      const q1 = getSelectedValue('q2_1');
+      const q2 = getSelectedValue('q2_2');
+
+      let isQ1Correct = (q1 === 'B'); // Recessive
+      let isQ2Correct = (q2 === 'B'); // Tt (Carriers)
+
+      updateBlockState('q2_1_block', isQ1Correct);
+      updateBlockState('q2_2_block', isQ2Correct);
+
+      if (isQ1Correct && isQ2Correct) {
+        setTimeout(() => {
+          document.getElementById('stage2').classList.remove('active');
+          document.getElementById('stage3').classList.add('active');
+        }, 600);
+      }
+    }
+
+    // ROUND 3 CHECK
+    function checkRound3() {
+      const val = document.getElementById('q3_1_input').value.trim();
+      let isCorrect = (val === '25' || val === '25%');
+
+      updateBlockState('q3_1_block', isCorrect);
+
+      if (isCorrect) {
+        clearInterval(timerInterval);
+        
+        // Calculate total time taken
+        let mins = Math.floor(secondsElapsed / 60);
+        let secs = secondsElapsed % 60;
+        let timeString = `${mins}m ${secs}s`;
+        
+        document.getElementById('finalTime').textContent = timeString;
+
+        setTimeout(() => {
+          document.getElementById('victoryModal').style.display = 'flex';
+        }, 600);
+      }
+    }
+
+    // Helper: Update CSS styles for visual feedback (Green / Red Shake)
+    function updateBlockState(blockId, isCorrect) {
+      const block = document.getElementById(blockId);
+      block.classList.remove('correct', 'incorrect');
+      
+      // Trigger reflow for animation reset
+      void block.offsetWidth;
+
+      if (isCorrect) {
+        block.classList.add('correct');
+      } else {
+        block.classList.add('incorrect');
+      }
+    }
+
+    // Initialize Timer on Page Load
+    window.onload = startTimer;
+  </script>
+</body>
+</html>
