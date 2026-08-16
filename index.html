@@ -2,194 +2,105 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pedigree Detective: Advanced Genetics Relay 🧬</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genetics Field Agent Terminal 🔬</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #d946ef 100%);
-      --card-bg: rgba(255, 255, 255, 0.95);
-      --text-main: #0f172a;
-      --text-muted: #64748b;
+      --bg: #0b0f19;
+      --card-bg: rgba(17, 24, 39, 0.9);
+      --card-border: rgba(99, 102, 241, 0.3);
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.4);
+      --text: #f3f4f6;
+      --muted: #9ca3af;
       --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.4);
-      --error: #f43f5e;
-      --error-glow: rgba(244, 63, 94, 0.4);
-      --border-color: #cbd5e1;
-      --radius: 18px;
-      --shadow: 0 15px 30px -10px rgba(79, 70, 229, 0.25);
+      --danger: #f43f5e;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
     body {
-      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #312e81);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      color: var(--text-main);
-      min-height: 100vh;
-      min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: clamp(0.5rem, 2vw, 1.2rem);
-      overflow-x: hidden;
-    }
-
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    header {
-      width: 100%; max-width: 1100px;
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      padding: clamp(0.6rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 1rem; z-index: 2; gap: 0.5rem;
-    }
-
-    .title-area h1 {
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem); font-weight: 900;
-      background: var(--primary-gradient);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-
-    .timer-badge {
-      background: #ffffff; padding: 0.4rem 0.9rem; border-radius: 50px;
-      font-weight: 800; font-size: clamp(0.9rem, 2vw, 1.1rem);
-      color: #334155; border: 2px solid var(--border-color); white-space: nowrap;
-    }
-    .timer-badge.warning {
-      background: #ffe4e6; border-color: var(--error); color: var(--error);
-      animation: pulseAlert 0.8s infinite alternate;
-    }
-
-    /* Fully Responsive Grid Container */
-    .container {
-      width: 100%; max-width: 1100px;
-      display: grid; grid-template-columns: 1fr;
-      gap: 1rem; z-index: 2; flex-grow: 1;
-    }
-    @media (min-width: 820px) {
-      .container { grid-template-columns: 1fr 1fr; }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: clamp(1rem, 2vw, 1.5rem);
-      box-shadow: var(--shadow);
-      display: flex; flex-direction: column;
-      position: relative; overflow: hidden;
-      max-height: 80vh;
-    }
-
-    /* Auto-Scaling Pedigree Chart */
-    .svg-container {
-      width: 100%; max-height: 260px;
-      background: #ffffff; border: 2px dashed #cbd5e1;
-      border-radius: 14px; padding: 0.5rem; margin: 0.5rem 0;
+      background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+      color: var(--text); min-height: 100vh;
       display: flex; justify-content: center; align-items: center;
-    }
-    svg { width: 100%; height: auto; max-height: 240px; }
-
-    .legend {
-      display: flex; flex-wrap: wrap; gap: 0.5rem;
-      justify-content: center; font-size: clamp(0.7rem, 1.5vw, 0.8rem); font-weight: 700;
-      background: #f1f5f9; padding: 0.6rem; border-radius: 10px; width: 100%;
-    }
-    .legend-item { display: flex; align-items: center; gap: 0.3rem; }
-    .legend-box { width: 14px; height: 14px; border: 2px solid #1e293b; background: white; }
-    .legend-box.circle { border-radius: 50%; }
-    .legend-box.shaded { background: #6366f1; border-color: #6366f1; }
-
-    /* STEP / QUESTION PANNING SYSTEM */
-    .question-viewport {
-      position: relative; width: 100%; height: 100%; min-height: 320px; overflow: hidden;
+      padding: 1rem; overflow-x: hidden;
     }
 
-    .q-step {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      display: flex; flex-direction: column; gap: 0.8rem;
-      opacity: 0; transform: translateX(120%) scale(0.95);
-      pointer-events: none;
-      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .container {
+      width: 100%; max-width: 540px;
+      position: relative;
     }
 
-    .q-step.active {
-      opacity: 1; transform: translateX(0) scale(1); pointer-events: all;
+    /* Registration Screen */
+    .screen {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 24px; padding: 2rem; backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      display: none; flex-direction: column; gap: 1.2rem;
     }
+    .screen.active { display: flex; animation: fadeIn 0.4s ease; }
 
-    .q-step.exit-left {
-      opacity: 0; transform: translateX(-120%) scale(0.95); pointer-events: none;
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    h2 { font-weight: 900; font-size: 1.5rem; color: var(--accent); letter-spacing: -0.5px; }
+    p { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
+
+    input[type="text"] {
+      width: 100%; background: rgba(0,0,0,0.4); border: 2px solid var(--card-border);
+      border-radius: 14px; padding: 1rem; color: white; font-weight: 700; font-size: 1rem;
+      outline: none; transition: border 0.2s;
     }
+    input[type="text"]:focus { border-color: var(--accent); }
 
-    .step-badge {
-      font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
-      color: #6366f1; letter-spacing: 0.5px;
+    .btn {
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      color: #000; font-weight: 900; font-size: 1rem; padding: 1rem;
+      border: none; border-radius: 14px; cursor: pointer;
+      box-shadow: 0 4px 20px var(--accent-glow); transition: all 0.2s;
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
+    .btn:active { transform: scale(0.98); }
 
-    .question-block {
-      background: #ffffff; padding: 1rem; border-radius: 12px;
-      border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
-    .question-block p { font-weight: 700; font-size: clamp(0.9rem, 2vw, 1rem); }
-
-    .options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
-    .option-btn {
-      background: #f8fafc; border: 2px solid #e2e8f0;
-      padding: clamp(0.6rem, 1.5vw, 0.8rem) 0.9rem; border-radius: 10px;
-      font-weight: 700; font-size: clamp(0.8rem, 1.8vw, 0.9rem);
-      cursor: pointer; text-align: left; transition: all 0.2s ease;
+    /* Question Screen Visuals */
+    .status-bar {
       display: flex; justify-content: space-between; align-items: center;
-    }
-    .option-btn:hover { border-color: #818cf8; background: #f5f3ff; transform: translateY(-1px); }
-    .option-btn.selected { border-color: #6366f1; background: #e0e7ff; color: #3730a3; }
-
-    .question-block.correct {
-      border-color: var(--success) !important; background: #ecfdf5 !important;
-      box-shadow: 0 0 15px var(--success-glow) !important; animation: bounce 0.4s ease;
-    }
-    .question-block.incorrect {
-      border-color: var(--error) !important; background: #fff1f2 !important;
-      box-shadow: 0 0 15px var(--error-glow) !important; animation: shake 0.4s ease;
+      font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;
     }
 
-    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-    @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-6px); } 50% { transform: translateX(6px); } }
+    .q-text { font-size: 1.05rem; font-weight: 800; line-height: 1.4; color: #fff; }
 
-    .action-btn {
-      margin-top: auto; background: var(--primary-gradient); color: white; border: none;
-      padding: 0.8rem; border-radius: 12px; font-weight: 800; font-size: 1rem;
-      cursor: pointer; box-shadow: 0 8px 18px rgba(99, 102, 241, 0.3); transition: all 0.2s ease;
-    }
-    .action-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(99, 102, 241, 0.4); }
+    .options-grid { display: flex; flex-direction: column; gap: 0.8rem; margin: 0.5rem 0; }
 
-    .number-input {
-      width: 100%; padding: 0.75rem; border: 2px solid #cbd5e1;
-      border-radius: 10px; font-size: 1rem; font-weight: 700; margin-top: 0.6rem;
+    .opt-btn {
+      background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 0.9rem 1.1rem; color: #fff; font-weight: 700;
+      font-size: 0.92rem; text-align: left; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .opt-btn:hover { background: rgba(56, 189, 248, 0.08); border-color: var(--accent); }
+    .opt-btn.selected { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+
+    .feedback {
+      font-size: 0.85rem; font-weight: 800; text-align: center; min-height: 1.2rem;
+    }
+    .feedback.err { color: var(--danger); animation: shake 0.3s; }
+    .feedback.ok { color: var(--success); }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
     }
 
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
-      display: none; justify-content: center; align-items: center; padding: 1rem; z-index: 100;
+    .pedigree-box {
+      background: #000; border: 1px solid var(--card-border); border-radius: 12px;
+      padding: 0.8rem; font-family: monospace; font-size: 0.75rem; color: #38bdf8;
+      white-space: pre; overflow-x: auto; line-height: 1.2; text-align: center;
     }
-    .modal-content {
-      background: white; padding: 2rem; border-radius: var(--radius);
-      max-width: 440px; width: 100%; text-align: center;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-
-    @keyframes pulseAlert { from { transform: scale(1); } to { transform: scale(1.05); } }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -197,171 +108,48 @@
 </head>
 <body>
 
-  <!-- Start Modal -->
-  <div class="modal-overlay" id="teamModal" style="display: flex;">
-    <div class="modal-content">
-      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🧬</div>
-      <h2 style="font-size: 1.6rem; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        Pedigree Detective
-      </h2>
-      <p style="color: var(--text-muted); margin-bottom: 1.2rem; font-size: 0.9rem;">
-        Solve the genetic trail question-by-question!
-      </p>
-      <input type="text" id="teamNameInput" class="number-input" placeholder="Enter Team Name..." style="margin-bottom: 1.2rem;" autofocus>
-      <button class="action-btn" style="width: 100%;" onclick="startTeamMission()">Start Detective Relay 🚀</button>
-    </div>
-  </div>
-
-  <header>
-    <div class="title-area">
-      <h1>🧬 Pedigree Detective</h1>
-      <p style="font-weight: 600; color: var(--text-muted); font-size: 0.8rem;">
-        Team: <span id="teamDisplayLabel" style="color: #6366f1; font-weight: 800;">Not Set</span>
-      </p>
-    </div>
-    <div class="timer-badge" id="timerDisplay">⏱️ <span id="timeText">05:00</span></div>
-  </header>
-
   <div class="container">
-    <!-- Left Column: Pedigree Chart -->
-    <div class="card" style="align-items: center;">
-      <h2 style="font-size: 1rem; font-weight: 800; align-self: flex-start; color: #1e293b;">
-        🔍 Exhibit A: Purple-Tongue Pedigree
-      </h2>
-      <div class="svg-container">
-        <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
-          <text x="5" y="45" font-weight="800" fill="#6366f1" font-size="12">Gen I</text>
-          <text x="5" y="115" font-weight="800" fill="#6366f1" font-size="12">Gen II</text>
-          <text x="5" y="185" font-weight="800" fill="#6366f1" font-size="12">Gen III</text>
-          
-          <line x1="110" y1="40" x2="190" y2="40" stroke="#334155" stroke-width="2.5"/>
-          <line x1="150" y1="40" x2="150" y2="75" stroke="#334155" stroke-width="2.5"/>
-          <line x1="80" y1="75" x2="220" y2="75" stroke="#334155" stroke-width="2.5"/>
-          <line x1="80" y1="75" x2="80" y2="100" stroke="#334155" stroke-width="2.5"/>
-          <line x1="220" y1="75" x2="220" y2="100" stroke="#334155" stroke-width="2.5"/>
-          <line x1="220" y1="115" x2="270" y2="115" stroke="#334155" stroke-width="2.5"/>
-          <line x1="245" y1="115" x2="245" y2="150" stroke="#334155" stroke-width="2.5"/>
-          <line x1="200" y1="150" x2="290" y2="150" stroke="#334155" stroke-width="2.5"/>
-          <line x1="200" y1="150" x2="200" y2="170" stroke="#334155" stroke-width="2.5"/>
-          <line x1="290" y1="150" x2="290" y2="170" stroke="#334155" stroke-width="2.5"/>
 
-          <rect x="90" y="25" width="30" height="30" rx="4" fill="#6366f1" stroke="#334155" stroke-width="2.5"/>
-          <text x="98" y="20" font-size="10" font-weight="700" fill="#64748b">I-1</text>
-
-          <circle cx="205" cy="40" r="15" fill="#fff" stroke="#334155" stroke-width="2.5"/>
-          <text x="198" y="20" font-size="10" font-weight="700" fill="#64748b">I-2</text>
-
-          <circle cx="80" cy="115" r="15" fill="#fff" stroke="#334155" stroke-width="2.5"/>
-          <text x="73" y="142" font-size="10" font-weight="700" fill="#64748b">II-1</text>
-
-          <rect x="205" y="100" width="30" height="30" rx="4" fill="#fff" stroke="#334155" stroke-width="2.5"/>
-          <text x="210" y="142" font-size="10" font-weight="700" fill="#64748b">II-2</text>
-
-          <circle cx="270" cy="115" r="15" fill="#fff" stroke="#334155" stroke-width="2.5"/>
-          <text x="263" y="142" font-size="10" font-weight="700" fill="#64748b">II-3</text>
-
-          <rect x="185" y="170" width="30" height="30" rx="4" fill="#6366f1" stroke="#334155" stroke-width="2.5"/>
-          <text x="188" y="212" font-size="10" font-weight="700" fill="#64748b">III-1</text>
-
-          <circle cx="290" cy="185" r="15" fill="#fff" stroke="#334155" stroke-width="2.5"/>
-          <text x="283" y="212" font-size="10" font-weight="700" fill="#64748b">III-2</text>
-        </svg>
-      </div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-box"></div> Male</div>
-        <div class="legend-item"><div class="legend-box circle"></div> Female</div>
-        <div class="legend-item"><div class="legend-box shaded"></div> Affected</div>
-        <div class="legend-item"><div class="legend-box"></div> Unaffected</div>
-      </div>
+    <!-- LOGIN SCREEN -->
+    <div class="screen active" id="loginScreen">
+      <h2>🧬 FIELD AGENT LOGIN</h2>
+      <p>Enter your Squad / Team Name to connect to Genetics Command HQ.</p>
+      <input type="text" id="teamInput" placeholder="e.g. Helix Hunters" maxlength="20">
+      <button class="btn" onclick="registerTeam()">INITIALIZE TERMINAL 🚀</button>
     </div>
 
-    <!-- Right Column: Question Viewport with Step-by-Step Panning -->
-    <div class="card">
-      <div class="question-viewport">
-        
-        <!-- QUESTION 1 -->
-        <div class="q-step active" id="step1">
-          <div class="step-badge">Question 1 of 5 • Inheritance Type</div>
-          <div class="question-block" id="block1">
-            <p>Neither parent in Gen II shows the purple-tongue trait, but child III-1 HAS it! What type of inheritance is this?</p>
-            <div class="options" data-q="q1">
-              <button class="option-btn" data-val="A">Autosomal Dominant</button>
-              <button class="option-btn" data-val="B">Autosomal Recessive</button>
-              <button class="option-btn" data-val="C">Y-Linked Trait</button>
-            </div>
-          </div>
-          <button class="action-btn" onclick="checkQ1()">Check Answer ⚡</button>
-        </div>
-
-        <!-- QUESTION 2 -->
-        <div class="q-step" id="step2">
-          <div class="step-badge">Question 2 of 5 • Parental Genotypes</div>
-          <div class="question-block" id="block2">
-            <p>Based on child III-1 (affected, tt), what MUST be the exact genotypes of parents II-2 and II-3?</p>
-            <div class="options" data-q="q2">
-              <button class="option-btn" data-val="A">Both are TT (Homozygous Dominant)</button>
-              <button class="option-btn" data-val="B">Both are Tt (Heterozygous Carriers)</button>
-              <button class="option-btn" data-val="C">One is TT, one is tt</button>
-            </div>
-          </div>
-          <button class="action-btn" onclick="checkQ2()">Check Answer ⚡</button>
-        </div>
-
-        <!-- QUESTION 3 -->
-        <div class="q-step" id="step3">
-          <div class="step-badge">Question 3 of 5 • Carrier Odds</div>
-          <div class="question-block" id="block3">
-            <p>Child III-2 is unaffected (does NOT have a purple tongue). What is the probability that III-2 is a CARRIER (Tt)?</p>
-            <div class="options" data-q="q3">
-              <button class="option-btn" data-val="A">25% (1/4)</button>
-              <button class="option-btn" data-val="B">50% (2/4)</button>
-              <button class="option-btn" data-val="C">66.7% (2/3)</button>
-            </div>
-          </div>
-          <button class="action-btn" onclick="checkQ3()">Check Answer ⚡</button>
-        </div>
-
-        <!-- QUESTION 4 -->
-        <div class="q-step" id="step4">
-          <div class="step-badge">Question 4 of 5 • Ancestor Deduction</div>
-          <div class="question-block" id="block4">
-            <p>Look back at Gen I. Father I-1 is affected (tt) and Mother I-2 is unaffected. What is the guaranteed genotype of daughter II-1?</p>
-            <div class="options" data-q="q4">
-              <button class="option-btn" data-val="A">100% chance of being Tt (Carrier)</button>
-              <button class="option-btn" data-val="B">50% TT, 50% tt</button>
-              <button class="option-btn" data-val="C">100% chance of being TT</button>
-            </div>
-          </div>
-          <button class="action-btn" onclick="checkQ4()">Check Answer ⚡</button>
-        </div>
-
-        <!-- QUESTION 5 -->
-        <div class="q-step" id="step5">
-          <div class="step-badge">Question 5 of 5 • Future Probability</div>
-          <div class="question-block" id="block5">
-            <p>If parents II-2 (Tt) and II-3 (Tt) have a 3rd child, what is the exact percentage chance they will have an UNAFFECTED child?</p>
-            <input type="number" class="number-input" id="q5_input" placeholder="Enter percentage (e.g., 75)">
-          </div>
-          <button class="action-btn" onclick="checkQ5()">Cross Finish Line 🏆</button>
-        </div>
-
+    <!-- QUESTION SCREEN -->
+    <div class="screen" id="qScreen">
+      <div class="status-bar">
+        <span id="squadBadge">SQUAD: ---</span>
+        <span id="stageBadge">CASE 1 / 5</span>
       </div>
-    </div>
-  </div>
 
-  <!-- Victory Modal -->
-  <div class="modal-overlay" id="victoryModal">
-    <div class="modal-content">
-      <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🏆</div>
-      <h2 style="font-size: 1.8rem; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        CASE SOLVED!
-      </h2>
-      <p style="color: var(--text-muted); margin-bottom: 1rem; font-weight: 600;">Outstanding Genetics Analysis!</p>
-      <div style="background: #f1f5f9; padding: 0.8rem; border-radius: 10px; font-size: 1.2rem; font-weight: 800; color: #4338ca; margin-bottom: 1.2rem;">
-        Final Time: <span id="finalTime">00:00</span>
+      <div class="pedigree-box" id="pedigreeDisplay">
+  [GEN 1]  (⬛ Male Affected)  ---  (◯ Female Carrier)
+                   |
+  [GEN 2]     +----+----+
+              |         |
+           (⬜ Male)  (● Female Affected)
       </div>
-      <button class="action-btn" style="width: 100%;" onclick="location.reload()">Play Again 🔄</button>
+
+      <div class="q-text" id="qText">Question text loading...</div>
+
+      <div class="options-grid" id="optionsContainer"></div>
+
+      <div class="feedback" id="feedbackText"></div>
+
+      <button class="btn" id="submitBtn" onclick="processSubmission()">SUBMIT ANALYSIS ⚡</button>
     </div>
+
+    <!-- FINISH SCREEN -->
+    <div class="screen" id="finishScreen">
+      <h2>🏆 MISSION COMPLETED</h2>
+      <p>Your genetics intel has been transmitted to Command HQ!</p>
+      <div style="font-size: 2.5rem; text-align: center; margin: 1rem 0;">🧬✨</div>
+      <p style="text-align: center; font-weight: 800; color: var(--success);" id="finalTimeText">Time: --:--</p>
+    </div>
+
   </div>
 
   <script>
@@ -379,128 +167,167 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let teamName = "";
-    let timeRemaining = 300;
-    let timerInterval = null;
-    let secondsElapsed = 0;
-
-    function startTeamMission() {
-      const input = document.getElementById('teamNameInput').value.trim();
-      if (!input) return alert("Please enter a team name!");
-      
-      teamName = input.replace(/[.#$\[\]]/g, "_");
-      document.getElementById('teamDisplayLabel').textContent = input;
-      document.getElementById('teamModal').style.display = 'none';
-      
-      startTimer();
-      sendProgressSignal(1, "In Progress");
-    }
-
-    function sendProgressSignal(stage, status) {
-      if (!teamName) return;
-      db.ref('teams/' + teamName).set({
-        team: teamName,
-        stage: stage,
-        status: status,
-        timeElapsed: secondsElapsed,
-        lastUpdated: Date.now()
-      });
-    }
-
-    function startTimer() {
-      timerInterval = setInterval(() => {
-        timeRemaining--;
-        secondsElapsed++;
-        let mins = Math.floor(timeRemaining / 60);
-        let secs = timeRemaining % 60;
-        document.getElementById('timeText').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-
-        if (timeRemaining <= 60) document.getElementById('timerDisplay').classList.add('warning');
-        if (timeRemaining <= 0) {
-          clearInterval(timerInterval);
-          sendProgressSignal(5, "Time Expired");
-          alert("⏱️ Time's up! Mission finished!");
-        }
-      }, 1000);
-    }
-
-    document.querySelectorAll('.options').forEach(group => {
-      group.addEventListener('click', (e) => {
-        const btn = e.target.closest('.option-btn');
-        if (btn) {
-          group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-        }
-      });
-    });
-
-    function getSelectedValue(groupName) {
-      const selected = document.querySelector(`.options[data-q="${groupName}"] .option-btn.selected`);
-      return selected ? selected.getAttribute('data-val') : null;
-    }
-
-    function updateBlockState(blockId, isCorrect) {
-      const block = document.getElementById(blockId);
-      block.classList.remove('correct', 'incorrect');
-      void block.offsetWidth;
-      block.classList.add(isCorrect ? 'correct' : 'incorrect');
-    }
-
-    // Panning transition between individual questions
-    function nextQuestion(currentStepId, nextStepId, nextStageNum) {
-      const currentEl = document.getElementById(currentStepId);
-      const nextEl = document.getElementById(nextStepId);
-
-      currentEl.classList.remove('active');
-      currentEl.classList.add('exit-left');
-
-      setTimeout(() => {
-        nextEl.classList.add('active');
-        sendProgressSignal(nextStageNum, "In Progress");
-      }, 350);
-    }
-
-    function checkQ1() {
-      let isCorrect = (getSelectedValue('q1') === 'B');
-      updateBlockState('block1', isCorrect);
-      if (isCorrect) setTimeout(() => nextQuestion('step1', 'step2', 2), 500);
-    }
-
-    function checkQ2() {
-      let isCorrect = (getSelectedValue('q2') === 'B');
-      updateBlockState('block2', isCorrect);
-      if (isCorrect) setTimeout(() => nextQuestion('step2', 'step3', 3), 500);
-    }
-
-    function checkQ3() {
-      let isCorrect = (getSelectedValue('q3') === 'C'); // 2/3 probability among unaffected
-      updateBlockState('block3', isCorrect);
-      if (isCorrect) setTimeout(() => nextQuestion('step3', 'step4', 4), 500);
-    }
-
-    function checkQ4() {
-      let isCorrect = (getSelectedValue('q4') === 'A');
-      updateBlockState('block4', isCorrect);
-      if (isCorrect) setTimeout(() => nextQuestion('step4', 'step5', 5), 500);
-    }
-
-    function checkQ5() {
-      const val = document.getElementById('q5_input').value.trim();
-      let isCorrect = (val === '75' || val === '75%');
-      updateBlockState('block5', isCorrect);
-
-      if (isCorrect) {
-        clearInterval(timerInterval);
-        sendProgressSignal(5, "Completed");
-
-        let mins = Math.floor(secondsElapsed / 60);
-        let secs = secondsElapsed % 60;
-        document.getElementById('finalTime').textContent = `${mins}m ${secs}s`;
-
-        setTimeout(() => {
-          document.getElementById('victoryModal').style.display = 'flex';
-        }, 600);
+    // 5 Challenging Genetics Questions for 5-Minute Round
+    const questions = [
+      {
+        q: "1. Based on the pedigree chart above, an affected father (⬛) and a carrier mother (◯) have children. What is the mode of inheritance if daughters can be fully affected (●)?",
+        diagram: "  [P1] (⬛ X^a Y)  x  (◯ X^A X^a)\n             |\n     +-------+------+\n     |              |\n(⬜ X^A Y)    (● X^a X^a)",
+        opts: [
+          { key: "A", txt: "Autosomal Dominant" },
+          { key: "B", txt: "X-Linked Recessive" },
+          { key: "C", txt: "Y-Linked Traits Only" }
+        ],
+        ans: "B"
+      },
+      {
+        q: "2. Two unaffected parents have a child with Cystic Fibrosis (Autosomal Recessive, 'c'). What are the exact genotypes of both parents?",
+        diagram: "   (⬜ Healthy Father)  x  (◯ Healthy Mother)\n                  |\n          (⬛ Child with CF: cc)",
+        opts: [
+          { key: "A", txt: "Father: CC | Mother: cc" },
+          { key: "B", txt: "Both parents are Heterozygous Carriers (Cc)" },
+          { key: "C", txt: "Father: Cc | Mother: CC" }
+        ],
+        ans: "B"
+      },
+      {
+        q: "3. If two carrier parents (Cc x Cc) have a HEALTHY unaffected child, what is the probability that this child is a carrier (Cc)?",
+        diagram: "Cross: Cc x Cc  -->  Punnett: CC (25%), Cc (50%), cc (25%)\nNote: The child is KNOWN to be healthy (not cc).",
+        opts: [
+          { key: "A", txt: "50% (2/4)" },
+          { key: "B", txt: "66.7% (2/3)" },
+          { key: "C", txt: "75% (3/4)" }
+        ],
+        ans: "B"
+      },
+      {
+        q: "4. A mother with Hemophilia (X^h X^h) has children with a normal father (X^H Y). What percentage of their SONS will have Hemophilia?",
+        diagram: "Mother: X^h X^h  x  Father: X^H Y\nSons inherit Y from Father and X^h from Mother.",
+        opts: [
+          { key: "A", txt: "100% of Sons" },
+          { key: "B", txt: "50% of Sons" },
+          { key: "C", txt: "0% of Sons" }
+        ],
+        ans: "A"
+      },
+      {
+        q: "5. FINAL CASE: In a pedigree showing Huntington's Disease (Autosomal Dominant 'H'), an affected heterozygous person (Hh) marries a healthy person (hh). What percent of offspring inherit HD?",
+        diagram: "Cross: Hh  x  hh\nCalculate the phenotype ratio for affected offspring.",
+        opts: [
+          { key: "A", txt: "25% Affected" },
+          { key: "B", txt: "50% Affected" },
+          { key: "C", txt: "100% Affected" }
+        ],
+        ans: "B"
       }
+    ];
+
+    let currentTeam = "";
+    let currentStage = 0; // 0 to 4
+    let selectedOptionKey = null;
+    let startTime = null;
+
+    function registerTeam() {
+      const name = document.getElementById('teamInput').value.trim();
+      if (!name) { alert("Please enter a squad name!"); return; }
+
+      currentTeam = name;
+      startTime = Date.now();
+
+      // Write to Firebase
+      db.ref('teams/' + currentTeam).set({
+        team: currentTeam,
+        stage: 1,
+        status: "In Field",
+        timeElapsed: 0
+      });
+
+      document.getElementById('squadBadge').textContent = `SQUAD: ${currentTeam}`;
+      showScreen('qScreen');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      selectedOptionKey = null;
+      document.getElementById('feedbackText').textContent = "";
+      document.getElementById('feedbackText').className = "feedback";
+      
+      const qData = questions[currentStage];
+      document.getElementById('stageBadge').textContent = `CASE ${currentStage + 1} / 5`;
+      document.getElementById('qText').textContent = qData.q;
+      document.getElementById('pedigreeDisplay').textContent = qData.diagram;
+
+      const optsContainer = document.getElementById('optionsContainer');
+      optsContainer.innerHTML = "";
+
+      qData.opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "opt-btn";
+        btn.innerHTML = `<span style="color:var(--accent);">${opt.key}.</span> ${opt.txt}`;
+        btn.onclick = () => selectOption(opt.key, btn);
+        optsContainer.appendChild(btn);
+      });
+    }
+
+    function selectOption(key, element) {
+      selectedOptionKey = key;
+      document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+      element.classList.add('selected');
+      document.getElementById('feedbackText').textContent = "";
+    }
+
+    function processSubmission() {
+      const fb = document.getElementById('feedbackText');
+      
+      if (!selectedOptionKey) {
+        fb.textContent = "⚠️ SELECT AN OPTION FIRST BEFORE SUBMITTING!";
+        fb.className = "feedback err";
+        return;
+      }
+
+      const qData = questions[currentStage];
+
+      if (selectedOptionKey === qData.ans) {
+        fb.textContent = "✅ CORRECT ANALYSIS! ADVANCING...";
+        fb.className = "feedback ok";
+
+        currentStage++;
+        const elapsedSecs = Math.floor((Date.now() - startTime) / 1000);
+
+        if (currentStage >= questions.length) {
+          // Finished
+          db.ref('teams/' + currentTeam).update({
+            stage: 5,
+            status: "Completed",
+            timeElapsed: elapsedSecs
+          });
+
+          setTimeout(() => {
+            let mins = Math.floor(elapsedSecs / 60);
+            let secs = elapsedSecs % 60;
+            document.getElementById('finalTimeText').textContent = `TOTAL TIME: ${mins}m ${secs}s`;
+            showScreen('finishScreen');
+          }, 600);
+
+        } else {
+          // Next question update
+          db.ref('teams/' + currentTeam).update({
+            stage: currentStage + 1,
+            status: "In Field",
+            timeElapsed: elapsedSecs
+          });
+
+          setTimeout(loadQuestion, 600);
+        }
+
+      } else {
+        fb.textContent = "❌ INCORRECT GENETIC ANALYSIS. RE-EVALUATE THE PEDIGREE!";
+        fb.className = "feedback err";
+      }
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
     }
   </script>
 </body>
