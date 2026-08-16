@@ -39,6 +39,16 @@
       text-align: center; margin: 1.2rem 0; outline: none;
     }
 
+    .waiting-screen {
+      display: none; background: var(--panel); border: 2px solid var(--gold); border-radius: 24px;
+      padding: 3rem 2rem; text-align: center; max-width: 480px; margin: 0 auto; backdrop-filter: blur(12px);
+    }
+    .pulse-loader {
+      width: 60px; height: 60px; border-radius: 50%; background: var(--gold); margin: 1.5rem auto;
+      animation: pulse 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 25px var(--gold); } }
+
     .app-layout { display: none; grid-template-columns: 1fr; gap: 1.5rem; }
     @media (min-width: 880px) { .app-layout { grid-template-columns: 1.15fr 1fr; } }
     .app-layout.active { display: grid; }
@@ -95,7 +105,14 @@
       <h2 style="color:var(--cyan); font-size: 1.8rem; font-weight: 900;">🧬 5-MIN SPEED RUN</h2>
       <p style="color:#94a3b8; font-size: 0.9rem; margin-top: 0.4rem;">5 Rounds • 11 Questions • 300 Seconds</p>
       <input type="text" id="teamInput" placeholder="Enter Squad Name..." maxlength="15" aria-label="Enter Squad Name">
-      <button class="btn" style="width:100%;" onclick="startSession()" aria-label="Start 5 Minute Speed Run">START 5-MIN RUN 🚀</button>
+      <button class="btn" style="width:100%;" onclick="joinLobby()" aria-label="Join Game Lobby">JOIN LOBBY 🚀</button>
+    </div>
+
+    <div class="waiting-screen" id="sWaiting">
+      <h2 style="color:var(--gold); font-size:1.8rem; font-weight:900;">CONNECTED TO HQ 📡</h2>
+      <p style="color:#94a3b8; margin-top:0.5rem;" id="txtWaitSquad">Squad Registered!</p>
+      <div class="pulse-loader"></div>
+      <h3 style="color:#fff; font-size:1.2rem; font-weight:800;" id="txtWaitStatus">Waiting for Host to start the race...</h3>
     </div>
 
     <div class="app-layout" id="sGame">
@@ -188,154 +205,33 @@
     const db = firebase.database();
 
     const questions = [
-      // --- ROUND 1 (2 Questions) ---
-      { 
-        gen: 1, round: 1, qNum: "1/11", 
-        q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent in a pedigree chart?", 
-        opts: [
-          "Square = Male | Circle = Female", 
-          "Circle = Male | Square = Female", 
-          "Square = Affected | Circle = Carrier",
-          "Square = Deceased | Circle = Alive"
-        ], 
-        ans: "Square = Male | Circle = Female" 
-      },
-      { 
-        gen: 1, round: 1, qNum: "2/11", 
-        q: "R1-Q2 [Gen I]: What does a shaded symbol mean in a standard pedigree?", 
-        opts: [
-          "Deceased individual", 
-          "Affected by the genetic trait/condition", 
-          "Unaffected carrier only",
-          "Adopted individual"
-        ], 
-        ans: "Affected by the genetic trait/condition" 
-      },
-
-      // --- ROUND 2 (3 Questions) ---
-      { 
-        gen: 2, round: 2, qNum: "3/11", 
-        q: "R2-Q1 [Gen II]: Gen II Son 1 is shaded blue (ff). What MUST be the genotypes of unshaded parents in Gen I?", 
-        opts: [
-          "Both are Heterozygous (Ff)", 
-          "Both are Homozygous Dominant (FF)", 
-          "One is (FF), One is (ff)",
-          "Both are Homozygous Recessive (ff)"
-        ], 
-        ans: "Both are Heterozygous (Ff)" 
-      },
-      { 
-        gen: 2, round: 2, qNum: "4/11", 
-        q: "R2-Q2 [Gen II]: Gen II Daughter is unshaded. Knowing her parents are Ff x Ff, what is her possible genotype?", 
-        opts: [
-          "Must be ff", 
-          "Either FF or Ff", 
-          "Must be FF only",
-          "Must be Ff only"
-        ], 
-        ans: "Either FF or Ff" 
-      },
-      { 
-        gen: 2, round: 2, qNum: "5/11", 
-        q: "R2-Q3 [Gen II]: Horizontal line connecting Gen II Daughter and her partner represents what?", 
-        opts: [
-          "Identical twins", 
-          "Mating / Marriage", 
-          "Divorced lineage",
-          "Sibling connection"
-        ], 
-        ans: "Mating / Marriage" 
-      },
-
-      // --- ROUND 3 (2 Questions) ---
-      { 
-        gen: 3, round: 3, qNum: "6/11", 
-        q: "R3-Q1 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", 
-        opts: [
-          "50% Chance", 
-          "25% Chance", 
-          "75% Chance",
-          "0% Chance"
-        ], 
-        ans: "50% Chance" 
-      },
-      { 
-        gen: 3, round: 3, qNum: "7/11", 
-        q: "R3-Q2 [Gen III]: What fraction of offspring from ff x Ff will be carrier (Ff) heterozygous?", 
-        opts: [
-          "1/4 (25%)", 
-          "1/2 (50%)", 
-          "3/4 (75%)",
-          "4/4 (100%)"
-        ], 
-        ans: "1/2 (50%)" 
-      },
-
-      // --- ROUND 4 (3 Questions) ---
-      { 
-        gen: 4, round: 4, qNum: "8/11", 
-        q: "R4-Q1 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", 
-        opts: [
-          "75% Chance", 
-          "25% Chance", 
-          "100% Chance",
-          "50% Chance"
-        ], 
-        ans: "75% Chance" 
-      },
-      { 
-        gen: 4, round: 4, qNum: "9/11", 
-        q: "R4-Q2 [Gen IV]: What is the probability that a normal (unshaded) child of Ff x Ff is a CARRIER (Ff)?", 
-        opts: [
-          "1/2 (50%)", 
-          "2/3 (~67%)", 
-          "1/4 (25%)",
-          "3/4 (75%)"
-        ], 
-        ans: "2/3 (~67%)" 
-      },
-      { 
-        gen: 4, round: 4, qNum: "10/11", 
-        q: "R4-Q3 [Gen IV]: In this 4-generation pedigree, why did the trait 'skip' Gen I phenotype-wise?", 
-        opts: [
-          "Trait is recessive, carried hiddenly by Gen I (Ff)", 
-          "Trait mutated spontaneously in Gen II", 
-          "Trait is environment-driven only",
-          "Trait is X-linked dominant"
-        ], 
-        ans: "Trait is recessive, carried hiddenly by Gen I (Ff)" 
-      },
-
-      // --- ROUND 5 (1 Harder Problem-Solving Punnett Question) ---
-      { 
-        gen: 4, round: 5, qNum: "11/11", 
-        q: "R5-FINAL [PUNNETT CHALLENGE]: If Gen IV Daughter (ff) marries a carrier male (Ff), and they have 3 children, what is the exact probability that ALL 3 children are affected (ff)?", 
-        opts: [
-          "1/8 (12.5%)", 
-          "1/4 (25%)", 
-          "1/16 (6.25%)",
-          "1/2 (50%)"
-        ], 
-        ans: "1/8 (12.5%)" 
-      }
+      { gen: 1, round: 1, qNum: "1/11", q: "R1-Q1 [Gen I]: What do the Square and Circle shapes represent in a pedigree chart?", opts: ["Square = Male | Circle = Female", "Circle = Male | Square = Female", "Square = Affected | Circle = Carrier", "Square = Deceased | Circle = Alive"], ans: "Square = Male | Circle = Female" },
+      { gen: 1, round: 1, qNum: "2/11", q: "R1-Q2 [Gen I]: What does a shaded symbol mean in a standard pedigree?", opts: ["Deceased individual", "Affected by the genetic trait/condition", "Unaffected carrier only", "Adopted individual"], ans: "Affected by the genetic trait/condition" },
+      { gen: 2, round: 2, qNum: "3/11", q: "R2-Q1 [Gen II]: Gen II Son 1 is shaded blue (ff). What MUST be the genotypes of unshaded parents in Gen I?", opts: ["Both are Heterozygous (Ff)", "Both are Homozygous Dominant (FF)", "One is (FF), One is (ff)", "Both are Homozygous Recessive (ff)"], ans: "Both are Heterozygous (Ff)" },
+      { gen: 2, round: 2, qNum: "4/11", q: "R2-Q2 [Gen II]: Gen II Daughter is unshaded. Knowing her parents are Ff x Ff, what is her possible genotype?", opts: ["Must be ff", "Either FF or Ff", "Must be FF only", "Must be Ff only"], ans: "Either FF or Ff" },
+      { gen: 2, round: 2, qNum: "5/11", q: "R2-Q3 [Gen II]: Horizontal line connecting Gen II Daughter and her partner represents what?", opts: ["Identical twins", "Mating / Marriage", "Divorced lineage", "Sibling connection"], ans: "Mating / Marriage" },
+      { gen: 3, round: 3, qNum: "6/11", q: "R3-Q1 [Gen III]: Gen III Daughter (ff) marries an unshaded Male (Ff). What is the chance of an affected child?", opts: ["50% Chance", "25% Chance", "75% Chance", "0% Chance"], ans: "50% Chance" },
+      { gen: 3, round: 3, qNum: "7/11", q: "R3-Q2 [Gen III]: What fraction of offspring from ff x Ff will be carrier (Ff) heterozygous?", opts: ["1/4 (25%)", "1/2 (50%)", "3/4 (75%)", "4/4 (100%)"], ans: "1/2 (50%)" },
+      { gen: 4, round: 4, qNum: "8/11", q: "R4-Q1 [Gen IV]: Gen IV child is shaded (ff). What is the chance her parents (Ff x Ff) have a NORMAL child?", opts: ["75% Chance", "25% Chance", "100% Chance", "50% Chance"], ans: "75% Chance" },
+      { gen: 4, round: 4, qNum: "9/11", q: "R4-Q2 [Gen IV]: What is the probability that a normal (unshaded) child of Ff x Ff is a CARRIER (Ff)?", opts: ["1/2 (50%)", "2/3 (~67%)", "1/4 (25%)", "3/4 (75%)"], ans: "2/3 (~67%)" },
+      { gen: 4, round: 4, qNum: "10/11", q: "R4-Q3 [Gen IV]: In this 4-generation pedigree, why did the trait 'skip' Gen I phenotype-wise?", opts: ["Trait is recessive, carried hiddenly by Gen I (Ff)", "Trait mutated spontaneously in Gen II", "Trait is environment-driven only", "Trait is X-linked dominant"], ans: "Trait is recessive, carried hiddenly by Gen I (Ff)" },
+      { gen: 4, round: 5, qNum: "11/11", q: "R5-FINAL [PUNNETT CHALLENGE]: If Gen IV Daughter (ff) marries a carrier male (Ff), and they have 3 children, what is the exact probability that ALL 3 children are affected (ff)?", opts: ["1/8 (12.5%)", "1/4 (25%)", "1/16 (6.25%)", "1/2 (50%)"], ans: "1/8 (12.5%)" }
     ];
 
     let teamName = "";
     let idx = 0;
     let selectedText = null;
     let currentShuffledOpts = [];
-    let timeLeft = 300; // 5 minutes in seconds
+    let timeLeft = 300;
     let timerInterval = null;
     let isLocked = false;
     let serverOffset = 0;
     let startTime = null;
 
-    // Track server clock offset for precision dynamic countdowns
     db.ref('.info/serverTimeOffset').on('value', (snap) => {
       serverOffset = snap.val() || 0;
     });
 
-    // Helper function to shuffle an array randomly
     function shuffleArray(array) {
       let arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -345,57 +241,60 @@
       return arr;
     }
 
-    function startSession() {
+    function joinLobby() {
       teamName = document.getElementById('teamInput').value.trim();
       if (!teamName) return alert("Enter Squad Name!");
 
-      // Ensure quizState/startTime exists centrally in Firebase
-      db.ref('quizState/startTime').get().then((snapshot) => {
-        if (!snapshot.exists()) {
-          db.ref('quizState').set({
-            startTime: firebase.database.ServerValue.TIMESTAMP
-          });
-        }
-      });
-
-      db.ref('teams/' + teamName).set({ team: teamName, stage: 1, round: 1, status: "Active", timeElapsed: 0 });
+      db.ref('teams/' + teamName).set({ team: teamName, stage: 1, round: 1, status: "In Lobby", timeElapsed: 0 });
 
       document.getElementById('txtSquad').textContent = `SQUAD: ${teamName.toUpperCase()}`;
+      document.getElementById('txtWaitSquad').textContent = `Squad: ${teamName.toUpperCase()}`;
       document.getElementById('sLogin').style.display = 'none';
-      document.getElementById('sGame').classList.add('active');
+      document.getElementById('sWaiting').style.display = 'block';
 
-      startTimer();
-      loadQuestion();
+      listenForStart();
     }
 
-    function startTimer() {
-      // Listen to the central start time from Firebase
+    function listenForStart() {
       db.ref('quizState/startTime').on('value', (snap) => {
         startTime = snap.val();
-        if (timerInterval) clearInterval(timerInterval);
 
-        if (!startTime) {
-          document.getElementById('txtTimer').textContent = "⏱️ 05:00";
-          return;
+        if (startTime) {
+          if (timerInterval) clearInterval(timerInterval);
+
+          timerInterval = setInterval(() => {
+            const exactServerNow = Date.now() + serverOffset;
+            const elapsedSeconds = Math.floor((exactServerNow - startTime) / 1000);
+
+            if (elapsedSeconds < 0) {
+              document.getElementById('txtWaitStatus').textContent = `🚀 RACE STARTING IN ${Math.abs(elapsedSeconds)}s...`;
+              return;
+            }
+
+            if (document.getElementById('sWaiting').style.display !== 'none') {
+              document.getElementById('sWaiting').style.display = 'none';
+              document.getElementById('sGame').classList.add('active');
+              loadQuestion();
+            }
+
+            timeLeft = Math.max(0, 300 - elapsedSeconds);
+            let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            let s = (timeLeft % 60).toString().padStart(2, '0');
+            const badge = document.getElementById('txtTimer');
+            badge.textContent = `⏱️ ${m}:${s}`;
+
+            if (timeLeft <= 60) badge.classList.add('warning');
+
+            if (timeLeft <= 0) {
+              clearInterval(timerInterval);
+              finishGame(false);
+            }
+          }, 1000);
+        } else {
+          document.getElementById('sWaiting').style.display = 'block';
+          document.getElementById('sGame').classList.remove('active');
+          document.getElementById('txtWaitStatus').textContent = "Waiting for Host to start the race...";
         }
-
-        timerInterval = setInterval(() => {
-          const exactServerNow = Date.now() + serverOffset;
-          const elapsedSeconds = Math.floor((exactServerNow - startTime) / 1000);
-          timeLeft = Math.max(0, 300 - elapsedSeconds);
-
-          let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-          let s = (timeLeft % 60).toString().padStart(2, '0');
-          const badge = document.getElementById('txtTimer');
-          badge.textContent = `⏱️ ${m}:${s}`;
-
-          if (timeLeft <= 60) badge.classList.add('warning');
-
-          if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            finishGame(false);
-          }
-        }, 1000);
       });
     }
 
@@ -405,7 +304,7 @@
       box.innerHTML = "";
 
       optionsList.forEach((txt, i) => {
-        const prefix = String.fromCharCode(65 + i); // A, B, C, D
+        const prefix = String.fromCharCode(65 + i);
         const btn = document.createElement('button');
         btn.className = "opt-btn";
         btn.textContent = `${prefix}. ${txt}`;
@@ -430,7 +329,6 @@
       document.querySelectorAll('.gen-group').forEach(g => g.classList.remove('active-gen'));
       document.getElementById(`gen${q.gen}`).classList.add('active-gen');
 
-      // Shuffle options for initial display
       currentShuffledOpts = shuffleArray(q.opts);
       renderOptions(currentShuffledOpts);
     }
@@ -467,7 +365,6 @@
           setTimeout(() => { panel.classList.remove('correct-border'); loadQuestion(); }, 600);
         }
       } else {
-        // LOCK SYSTEM FOR 7 SECONDS ON WRONG ANSWER
         isLocked = true;
         submitBtn.disabled = true;
         document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
@@ -487,7 +384,6 @@
             isLocked = false;
             submitBtn.disabled = false;
             
-            // Re-shuffle options after penalty ends!
             currentShuffledOpts = shuffleArray(questions[idx].opts);
             renderOptions(currentShuffledOpts);
 
@@ -534,6 +430,7 @@
       panel.classList.remove('correct-border', 'wrong-border');
 
       document.getElementById('sFinish').style.display = 'none';
+      document.getElementById('sWaiting').style.display = 'none';
       document.getElementById('sLogin').style.display = 'block';
     }
   </script>
