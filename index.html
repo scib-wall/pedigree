@@ -327,6 +327,13 @@
     let timeLeft = 300; // 5 minutes in seconds
     let timerInterval = null;
     let isLocked = false;
+    let serverOffset = 0;
+    let startTime = null;
+
+    // Track server clock offset for precision dynamic countdowns
+    db.ref('.info/serverTimeOffset').on('value', (snap) => {
+      serverOffset = snap.val() || 0;
+    });
 
     // Helper function to shuffle an array randomly
     function shuffleArray(array) {
@@ -342,6 +349,15 @@
       teamName = document.getElementById('teamInput').value.trim();
       if (!teamName) return alert("Enter Squad Name!");
 
+      // Ensure quizState/startTime exists centrally in Firebase
+      db.ref('quizState/startTime').get().then((snapshot) => {
+        if (!snapshot.exists()) {
+          db.ref('quizState').set({
+            startTime: firebase.database.ServerValue.TIMESTAMP
+          });
+        }
+      });
+
       db.ref('teams/' + teamName).set({ team: teamName, stage: 1, round: 1, status: "Active", timeElapsed: 0 });
 
       document.getElementById('txtSquad').textContent = `SQUAD: ${teamName.toUpperCase()}`;
@@ -353,20 +369,34 @@
     }
 
     function startTimer() {
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-        let s = (timeLeft % 60).toString().padStart(2, '0');
-        const badge = document.getElementById('txtTimer');
-        badge.textContent = `⏱️ ${m}:${s}`;
+      // Listen to the central start time from Firebase
+      db.ref('quizState/startTime').on('value', (snap) => {
+        startTime = snap.val();
+        if (timerInterval) clearInterval(timerInterval);
 
-        if (timeLeft <= 60) badge.classList.add('warning');
-
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          finishGame(false);
+        if (!startTime) {
+          document.getElementById('txtTimer').textContent = "⏱️ 05:00";
+          return;
         }
-      }, 1000);
+
+        timerInterval = setInterval(() => {
+          const exactServerNow = Date.now() + serverOffset;
+          const elapsedSeconds = Math.floor((exactServerNow - startTime) / 1000);
+          timeLeft = Math.max(0, 300 - elapsedSeconds);
+
+          let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+          let s = (timeLeft % 60).toString().padStart(2, '0');
+          const badge = document.getElementById('txtTimer');
+          badge.textContent = `⏱️ ${m}:${s}`;
+
+          if (timeLeft <= 60) badge.classList.add('warning');
+
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            finishGame(false);
+          }
+        }, 1000);
+      });
     }
 
     function renderOptions(optionsList) {
@@ -487,7 +517,7 @@
     }
 
     function resetGame() {
-      clearInterval(timerInterval);
+      if (timerInterval) clearInterval(timerInterval);
       idx = 0;
       timeLeft = 300;
       selectedText = null;
