@@ -3,77 +3,303 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedigree Detective: The Generational Relay</title>
+  <title>Pedigree Detective: Genetic Relay 🧬</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%);
-      --card-bg: #ffffff;
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --text-main: #1e1b4b;
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #d946ef 100%);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --text-main: #0f172a;
       --text-muted: #64748b;
       --success: #10b981;
-      --success-bg: #d1fae5;
+      --success-glow: rgba(16, 185, 129, 0.4);
       --error: #f43f5e;
-      --error-bg: #ffe4e6;
+      --error-glow: rgba(244, 63, 94, 0.4);
       --border-color: #e2e8f0;
-      --radius: 16px;
-      --shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.1);
+      --radius: 20px;
+      --shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.25);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 1rem; }
+
+    /* Animated Gradient Background */
+    body {
+      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #312e81);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating Background Particles */
+    .bg-particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+      animation: float 20s infinite linear;
+      z-index: 0;
+      pointer-events: none;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.8; }
+      80% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
 
     header {
-      width: 100%; max-width: 1100px; background: var(--card-bg); padding: 1rem 1.5rem;
-      border-radius: var(--radius); box-shadow: var(--shadow); display: flex;
-      justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+      width: 100%; max-width: 1100px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      padding: 1.2rem 1.8rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      z-index: 2;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
-    .title-area h1 { font-size: 1.4rem; color: var(--primary); }
-    .title-area p { font-size: 0.85rem; color: var(--text-muted); }
-    .timer-badge { background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 50px; font-weight: 700; font-size: 1.1rem; border: 2px solid var(--border-color); }
-    .timer-badge.warning { background: var(--error-bg); border-color: var(--error); color: var(--error); animation: pulse 1s infinite; }
 
-    .container { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr; gap: 1.5rem; flex-grow: 1; }
-    @media (min-width: 850px) { .container { grid-template-columns: 1.1fr 0.9fr; } }
+    .title-area h1 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-    .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); display: flex; flex-direction: column; }
-    .pedigree-panel { align-items: center; }
-    .svg-container { width: 100%; max-width: 450px; background: #fafafa; border: 2px dashed var(--border-color); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
-    svg { width: 100%; height: auto; }
+    .timer-badge {
+      background: #ffffff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #334155;
+      border: 2px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    .timer-badge.warning {
+      background: #ffe4e6;
+      border-color: var(--error);
+      color: var(--error);
+      animation: pulseAlert 0.8s infinite alternate;
+    }
 
-    .legend { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; font-size: 0.8rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px; width: 100%; }
+    .container {
+      width: 100%; max-width: 1100px;
+      display: grid; grid-template-columns: 1fr;
+      gap: 1.5rem; z-index: 2; flex-grow: 1;
+    }
+    @media (min-width: 880px) { .container { grid-template-columns: 1.1fr 0.9fr; } }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+    }
+
+    .svg-container {
+      width: 100%; max-width: 450px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 1rem; margin: 1rem 0;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 0.8rem;
+      justify-content: center; font-size: 0.85rem; font-weight: 700;
+      background: #f1f5f9; padding: 0.8rem; border-radius: 12px; width: 100%;
+    }
     .legend-item { display: flex; align-items: center; gap: 0.4rem; }
-    .legend-box { width: 14px; height: 14px; border: 2px solid #333; }
+    .legend-box { width: 16px; height: 16px; border: 2px solid #1e293b; background: white; }
     .legend-box.circle { border-radius: 50%; }
     .legend-box.shaded { background: #6366f1; border-color: #6366f1; }
 
-    .stage { display: none; flex-direction: column; gap: 1.2rem; height: 100%; }
-    .stage.active { display: flex; }
-    .stage-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; }
-    .stage-header h3 { font-size: 1.2rem; color: var(--primary); }
+    /* PANNING & POP-UP ANIMATION SYSTEM FOR STAGES */
+    .stage-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+    }
 
-    .question-block { background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); }
-    .options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
-    .option-btn { background: #ffffff; border: 2px solid var(--border-color); padding: 0.65rem 1rem; border-radius: 8px; cursor: pointer; text-align: left; }
-    .option-btn:hover { border-color: var(--primary); background: #f5f3ff; }
-    .option-btn.selected { border-color: var(--primary); background: #e0e7ff; font-weight: 700; }
+    .stage {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; flex-direction: column; gap: 1.2rem;
+      opacity: 0;
+      transform: translateX(100px) scale(0.95);
+      pointer-events: none;
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
 
-    .question-block.correct { border-color: var(--success); background: var(--success-bg); }
-    .question-block.incorrect { border-color: var(--error); background: var(--error-bg); animation: shake 0.4s ease; }
+    .stage.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: all;
+    }
 
-    .action-btn { margin-top: auto; background: var(--primary); color: white; border: none; padding: 0.85rem; border-radius: 10px; font-weight: 700; cursor: pointer; }
-    .number-input { width: 100%; padding: 0.65rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; margin-top: 0.5rem; }
+    .stage.exit-left {
+      opacity: 0;
+      transform: translateX(-100px) scale(0.95);
+      pointer-events: none;
+    }
 
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(30, 27, 75, 0.75); display: none; justify-content: center; align-items: center; padding: 1rem; z-index: 100; }
-    .modal-content { background: white; padding: 2.5rem; border-radius: var(--radius); max-width: 450px; text-align: center; }
+    .stage-header {
+      border-bottom: 2px dashed #e2e8f0;
+      padding-bottom: 0.8rem;
+    }
+    .stage-header h3 {
+      font-size: 1.3rem; font-weight: 800;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
 
-    @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .question-block {
+      background: #ffffff;
+      padding: 1.2rem; border-radius: 14px;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      transition: all 0.3s ease;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: popUpQuestion 0.5s forwards ease-out 0.2s;
+    }
+
+    @keyframes popUpQuestion {
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .options { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.8rem; }
+    .option-btn {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      padding: 0.85rem 1rem; border-radius: 12px;
+      font-weight: 700; cursor: pointer; text-align: left;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .option-btn:hover {
+      border-color: #818cf8;
+      background: #f5f3ff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.15);
+    }
+    .option-btn.selected {
+      border-color: #6366f1;
+      background: #e0e7ff;
+      color: #3730a3;
+      transform: scale(1.02);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Dramatic Correct / Error Animation Effects */
+    .question-block.correct {
+      border-color: var(--success) !important;
+      background: #ecfdf5 !important;
+      box-shadow: 0 0 20px var(--success-glow) !important;
+      animation: bounceSuccess 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+    .question-block.incorrect {
+      border-color: var(--error) !important;
+      background: #fff1f2 !important;
+      box-shadow: 0 0 20px var(--error-glow) !important;
+      animation: shakeError 0.4s ease-in-out;
+    }
+
+    @keyframes bounceSuccess {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .action-btn {
+      margin-top: auto;
+      background: var(--primary-gradient);
+      color: white; border: none;
+      padding: 1rem; border-radius: 14px;
+      font-weight: 800; font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+      transition: all 0.3s ease;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .action-btn:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 14px 28px rgba(99, 102, 241, 0.4);
+    }
+    .action-btn:active { transform: translateY(0); }
+
+    .number-input {
+      width: 100%; padding: 0.85rem;
+      border: 2px solid #cbd5e1; border-radius: 12px;
+      font-size: 1.1rem; font-weight: 700; margin-top: 0.8rem;
+      transition: all 0.3s ease; outline: none;
+    }
+    .number-input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Pop-up Modals */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      display: none; justify-content: center; align-items: center;
+      padding: 1rem; z-index: 100;
+    }
+    .modal-content {
+      background: white; padding: 2.8rem; border-radius: var(--radius);
+      max-width: 460px; width: 100%; text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: modalPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalPop {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes pulseAlert {
+      from { transform: scale(1); box-shadow: 0 0 0 rgba(244, 63, 94, 0.4); }
+      to { transform: scale(1.05); box-shadow: 0 0 20px rgba(244, 63, 94, 0.6); }
+    }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -81,55 +307,81 @@
 </head>
 <body>
 
+  <!-- Background Floating Particles -->
+  <div class="bg-particle" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s;"></div>
+  <div class="bg-particle" style="width: 120px; height: 120px; left: 75%; animation-delay: 4s;"></div>
+  <div class="bg-particle" style="width: 60px; height: 60px; left: 45%; animation-delay: 8s;"></div>
+
+  <!-- Start Modal -->
   <div class="modal-overlay" id="teamModal" style="display: flex;">
     <div class="modal-content">
-      <h2 style="color: var(--primary); margin-bottom: 0.5rem;">Join the Relay! 🧬</h2>
-      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Enter your Team Name to start the detective mission.</p>
-      <input type="text" id="teamNameInput" class="number-input" placeholder="e.g. Team Alpha" style="margin-bottom: 1.5rem;" autofocus>
-      <button class="action-btn" style="width: 100%;" onclick="startTeamMission()">Start Detective Relay 🚀</button>
+      <div style="font-size: 3.5rem; margin-bottom: 0.5rem; animation: float 3s ease-in-out infinite;">🧬</div>
+      <h2 style="font-size: 1.8rem; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;">
+        Genetic Relay Challenge
+      </h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.8rem; font-weight: 500;">
+        Assemble your team, solve the inheritance pedigree, and race against the clock!
+      </p>
+      <input type="text" id="teamNameInput" class="number-input" placeholder="⚡ Enter Team Name..." style="margin-bottom: 1.5rem;" autofocus>
+      <button class="action-btn" style="width: 100%;" onclick="startTeamMission()">
+        Launch Mission 🚀
+      </button>
     </div>
   </div>
 
   <header>
     <div class="title-area">
-      <h1>Pedigree Detective 🧬</h1>
-      <p>Team: <strong id="teamDisplayLabel">Not Set</strong></p>
+      <h1>🧬 Pedigree Detective</h1>
+      <p style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">
+        Team: <span id="teamDisplayLabel" style="color: #6366f1; font-weight: 800;">Not Set</span>
+      </p>
     </div>
     <div class="timer-badge" id="timerDisplay">⏱️ <span id="timeText">05:00</span></div>
   </header>
 
   <div class="container">
-    <div class="card pedigree-panel">
-      <h2 style="font-size: 1.1rem; margin-bottom: 1rem; align-self: flex-start;">Exhibit A: The Purple-Tongue Family Tree</h2>
+    <!-- Left Column: Pedigree Chart Exhibit -->
+    <div class="card" style="align-items: center;">
+      <h2 style="font-size: 1.2rem; font-weight: 800; align-self: flex-start; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+        🔍 Exhibit A: Purple-Tongue Family Tree
+      </h2>
       <div class="svg-container">
         <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
-          <text x="5" y="45" font-weight="bold" fill="#6366f1" font-size="12">Gen I</text>
-          <text x="5" y="115" font-weight="bold" fill="#6366f1" font-size="12">Gen II</text>
-          <text x="5" y="185" font-weight="bold" fill="#6366f1" font-size="12">Gen III</text>
-          <line x1="110" y1="40" x2="190" y2="40" stroke="#333" stroke-width="2"/>
-          <line x1="150" y1="40" x2="150" y2="75" stroke="#333" stroke-width="2"/>
-          <line x1="80" y1="75" x2="220" y2="75" stroke="#333" stroke-width="2"/>
-          <line x1="80" y1="75" x2="80" y2="100" stroke="#333" stroke-width="2"/>
-          <line x1="220" y1="75" x2="220" y2="100" stroke="#333" stroke-width="2"/>
-          <line x1="220" y1="115" x2="270" y2="115" stroke="#333" stroke-width="2"/>
-          <line x1="245" y1="115" x2="245" y2="150" stroke="#333" stroke-width="2"/>
-          <line x1="200" y1="150" x2="290" y2="150" stroke="#333" stroke-width="2"/>
-          <line x1="200" y1="150" x2="200" y2="170" stroke="#333" stroke-width="2"/>
-          <line x1="290" y1="150" x2="290" y2="170" stroke="#333" stroke-width="2"/>
-          <rect x="90" y="25" width="30" height="30" fill="#6366f1" stroke="#333" stroke-width="2"/>
-          <text x="100" y="20" font-size="10" fill="#666">I-1</text>
-          <circle cx="205" cy="40" r="15" fill="#fff" stroke="#333" stroke-width="2"/>
-          <text x="200" y="20" font-size="10" fill="#666">I-2</text>
-          <circle cx="80" cy="115" r="15" fill="#fff" stroke="#333" stroke-width="2"/>
-          <text x="73" y="142" font-size="10" fill="#666">II-1</text>
-          <rect x="205" y="100" width="30" height="30" fill="#fff" stroke="#333" stroke-width="2"/>
-          <text x="210" y="142" font-size="10" fill="#666">II-2</text>
-          <circle cx="270" cy="115" r="15" fill="#fff" stroke="#333" stroke-width="2"/>
-          <text x="263" y="142" font-size="10" fill="#666">II-3</text>
-          <rect x="185" y="170" width="30" height="30" fill="#6366f1" stroke="#333" stroke-width="2"/>
-          <text x="188" y="212" font-size="10" fill="#666">III-1</text>
-          <circle cx="290" cy="185" r="15" fill="#fff" stroke="#333" stroke-width="2"/>
-          <text x="283" y="212" font-size="10" fill="#666">III-2</text>
+          <text x="5" y="45" font-weight="800" fill="#6366f1" font-size="12">Gen I</text>
+          <text x="5" y="115" font-weight="800" fill="#6366f1" font-size="12">Gen II</text>
+          <text x="5" y="185" font-weight="800" fill="#6366f1" font-size="12">Gen III</text>
+          
+          <line x1="110" y1="40" x2="190" y2="40" stroke="#334155" stroke-width="2.5"/>
+          <line x1="150" y1="40" x2="150" y2="75" stroke="#334155" stroke-width="2.5"/>
+          <line x1="80" y1="75" x2="220" y2="75" stroke="#334155" stroke-width="2.5"/>
+          <line x1="80" y1="75" x2="80" y2="100" stroke="#334155" stroke-width="2.5"/>
+          <line x1="220" y1="75" x2="220" y2="100" stroke="#334155" stroke-width="2.5"/>
+          <line x1="220" y1="115" x2="270" y2="115" stroke="#334155" stroke-width="2.5"/>
+          <line x1="245" y1="115" x2="245" y2="150" stroke="#334155" stroke-width="2.5"/>
+          <line x1="200" y1="150" x2="290" y2="150" stroke="#334155" stroke-width="2.5"/>
+          <line x1="200" y1="150" x2="200" y2="170" stroke="#334155" stroke-width="2.5"/>
+          <line x1="290" y1="150" x2="290" y2="170" stroke="#334155" stroke-width="2.5"/>
+
+          <rect x="90" y="25" width="30" height="30" rx="4" fill="#6366f1" stroke="#334155" stroke-width="2.5"/>
+          <text x="98" y="20" font-size="10" font-weight="700" fill="#64748b">I-1</text>
+
+          <circle cx="205" cy="40" r="15" fill="#fff" stroke="#334155" stroke-width="2.5"/>
+          <text x="198" y="20" font-size="10" font-weight="700" fill="#64748b">I-2</text>
+
+          <circle cx="80" cy="115" r="15" fill="#fff" stroke="#334155" stroke-width="2.5"/>
+          <text x="73" y="142" font-size="10" font-weight="700" fill="#64748b">II-1</text>
+
+          <rect x="205" y="100" width="30" height="30" rx="4" fill="#fff" stroke="#334155" stroke-width="2.5"/>
+          <text x="210" y="142" font-size="10" font-weight="700" fill="#64748b">II-2</text>
+
+          <circle cx="270" cy="115" r="15" fill="#fff" stroke="#334155" stroke-width="2.5"/>
+          <text x="263" y="142" font-size="10" font-weight="700" fill="#64748b">II-3</text>
+
+          <rect x="185" y="170" width="30" height="30" rx="4" fill="#6366f1" stroke="#334155" stroke-width="2.5"/>
+          <text x="188" y="212" font-size="10" font-weight="700" fill="#64748b">III-1</text>
+
+          <circle cx="290" cy="185" r="15" fill="#fff" stroke="#334155" stroke-width="2.5"/>
+          <text x="283" y="212" font-size="10" font-weight="700" fill="#64748b">III-2</text>
         </svg>
       </div>
       <div class="legend">
@@ -140,76 +392,101 @@
       </div>
     </div>
 
+    <!-- Right Column: Animated Panning Stages -->
     <div class="card">
-      <div class="stage active" id="stage1">
-        <div class="stage-header">
-          <h3>🚩 Round 1: Ancestor Basics (Gen I)</h3>
-          <p>Crack the symbols to unlock Round 2!</p>
-        </div>
-        <div class="question-block" id="q1_1_block">
-          <p>1. What does the square symbol represent?</p>
-          <div class="options" data-q="q1_1">
-            <button class="option-btn" data-val="A">A) Female</button>
-            <button class="option-btn" data-val="B">B) Male</button>
-            <button class="option-btn" data-val="C">C) Pet/Animal</button>
+      <div class="stage-wrapper">
+        
+        <!-- ROUND 1 -->
+        <div class="stage active" id="stage1">
+          <div class="stage-header">
+            <h3>🚩 Round 1: Ancestor Symbols</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Crack the chart symbols to unlock Round 2!</p>
           </div>
-        </div>
-        <div class="question-block" id="q1_2_block">
-          <p>2. Look at Person I-1. What does the purple shading mean?</p>
-          <div class="options" data-q="q1_2">
-            <button class="option-btn" data-val="A">A) Unaffected</button>
-            <button class="option-btn" data-val="B">B) Has/Carries trait</button>
-          </div>
-        </div>
-        <button class="action-btn" onclick="checkRound1()">Submit Round 1</button>
-      </div>
 
-      <div class="stage" id="stage2">
-        <div class="stage-header">
-          <h3>🚩 Round 2: Parent Clues (Gen II)</h3>
-          <p>Analyze how the trait gets passed down!</p>
-        </div>
-        <div class="question-block" id="q2_1_block">
-          <p>1. Neither Gen II parent shows the trait, but child III-1 HAS it! Is it dominant or recessive?</p>
-          <div class="options" data-q="q2_1">
-            <button class="option-btn" data-val="A">A) Dominant</button>
-            <button class="option-btn" data-val="B">B) Recessive</button>
+          <div class="question-block" id="q1_1_block" style="animation-delay: 0.1s;">
+            <p style="font-weight: 700;">1. What does the square symbol represent?</p>
+            <div class="options" data-q="q1_1">
+              <button class="option-btn" data-val="A"><span>A) Female</span> <span>🚺</span></button>
+              <button class="option-btn" data-val="B"><span>B) Male</span> <span>🚹</span></button>
+              <button class="option-btn" data-val="C"><span>C) Pet/Animal</span> <span>🐾</span></button>
+            </div>
           </div>
-        </div>
-        <div class="question-block" id="q2_2_block">
-          <p>2. What MUST parents II-2 and II-3 be?</p>
-          <div class="options" data-q="q2_2">
-            <button class="option-btn" data-val="A">A) TT (Homozygous Dominant)</button>
-            <button class="option-btn" data-val="B">B) Tt (Heterozygous Carriers)</button>
-            <button class="option-btn" data-val="C">C) tt (Homozygous Recessive)</button>
-          </div>
-        </div>
-        <button class="action-btn" onclick="checkRound2()">Submit Round 2</button>
-      </div>
 
-      <div class="stage" id="stage3">
-        <div class="stage-header">
-          <h3>🚩 Round 3: Offspring Predictions (Gen III)</h3>
-          <p>Calculate probability to win!</p>
+          <div class="question-block" id="q1_2_block" style="animation-delay: 0.25s;">
+            <p style="font-weight: 700;">2. Look at Person I-1. What does purple shading mean?</p>
+            <div class="options" data-q="q1_2">
+              <button class="option-btn" data-val="A"><span>A) Unaffected</span> <span>⚪</span></button>
+              <button class="option-btn" data-val="B"><span>B) Has Trait</span> <span>🟣</span></button>
+            </div>
+          </div>
+
+          <button class="action-btn" onclick="checkRound1()">
+            Submit Round 1 Answers ⚡
+          </button>
         </div>
-        <div class="question-block" id="q3_1_block">
-          <p>1. Parents are Tt x Tt. What is the % chance their next child has a purple tongue (tt)?</p>
-          <input type="number" class="number-input" id="q3_1_input" placeholder="Type percentage (e.g. 25)">
+
+        <!-- ROUND 2 -->
+        <div class="stage" id="stage2">
+          <div class="stage-header">
+            <h3>🚩 Round 2: Mode of Inheritance</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Analyze parents to determine dominant vs recessive!</p>
+          </div>
+
+          <div class="question-block" id="q2_1_block" style="animation-delay: 0.1s;">
+            <p style="font-weight: 700;">1. Neither Gen II parent shows the trait, but child III-1 HAS it! Is the trait dominant or recessive?</p>
+            <div class="options" data-q="q2_1">
+              <button class="option-btn" data-val="A"><span>A) Dominant</span> <span>👑</span></button>
+              <button class="option-btn" data-val="B"><span>B) Recessive</span> <span>🥷</span></button>
+            </div>
+          </div>
+
+          <div class="question-block" id="q2_2_block" style="animation-delay: 0.25s;">
+            <p style="font-weight: 700;">2. What MUST parents II-2 and II-3 be?</p>
+            <div class="options" data-q="q2_2">
+              <button class="option-btn" data-val="A"><span>A) TT (Homozygous Dominant)</span></button>
+              <button class="option-btn" data-val="B"><span>B) Tt (Heterozygous Carriers)</span></button>
+              <button class="option-btn" data-val="C"><span>C) tt (Homozygous Recessive)</span></button>
+            </div>
+          </div>
+
+          <button class="action-btn" onclick="checkRound2()">
+            Submit Round 2 Answers ⚡
+          </button>
         </div>
-        <button class="action-btn" onclick="checkRound3()">Cross Final Finish Line! 🏁</button>
+
+        <!-- ROUND 3 -->
+        <div class="stage" id="stage3">
+          <div class="stage-header">
+            <h3>🚩 Round 3: Probability Prediction</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Calculate the percentage chance for the final challenge!</p>
+          </div>
+
+          <div class="question-block" id="q3_1_block" style="animation-delay: 0.1s;">
+            <p style="font-weight: 700;">1. Parents are Tt x Tt. What is the % chance their next child will have a purple tongue (tt)?</p>
+            <input type="number" class="number-input" id="q3_1_input" placeholder="Type percentage (e.g. 25)">
+          </div>
+
+          <button class="action-btn" onclick="checkRound3()">
+            Cross the Finish Line! 🏆
+          </button>
+        </div>
+
       </div>
     </div>
   </div>
 
+  <!-- Victory Modal -->
   <div class="modal-overlay" id="victoryModal">
     <div class="modal-content">
-      <div style="font-size: 3.5rem; margin-bottom: 1rem;">🏆</div>
-      <h2 style="color: var(--primary);">Relay Completed!</h2>
-      <p style="color: var(--text-muted); margin-bottom: 1rem;">Awesome work! You mastered the pedigree chart!</p>
-      <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary); margin-bottom: 1.5rem;">
-        Time Taken: <span id="finalTime">00:00</span>
+      <div style="font-size: 4rem; margin-bottom: 0.5rem; animation: pulseAlert 1s infinite alternate;">🏆</div>
+      <h2 style="font-size: 2rem; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        MISSION COMPLETE!
+      </h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem; font-weight: 600;">You solved the pedigree relay!</p>
+      <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; font-size: 1.3rem; font-weight: 800; color: #4338ca; margin-bottom: 1.5rem;">
+        Final Time: <span id="finalTime">00:00</span>
       </div>
-      <button class="action-btn" style="width: 100%;" onclick="location.reload()">Play Again</button>
+      <button class="action-btn" style="width: 100%;" onclick="location.reload()">Play Again 🔄</button>
     </div>
   </div>
 
@@ -269,16 +546,17 @@
         if (timeRemaining <= 0) {
           clearInterval(timerInterval);
           sendProgressSignal(currentStage, "Time Expired");
-          alert("⏱️ Time's up! Check with your team!");
+          alert("⏱️ Time's up! Mission finished!");
         }
       }, 1000);
     }
 
     document.querySelectorAll('.options').forEach(group => {
       group.addEventListener('click', (e) => {
-        if (e.target.classList.contains('option-btn')) {
-          group.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-          e.target.classList.add('selected');
+        const btn = e.target.closest('.option-btn');
+        if (btn) {
+          group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
         }
       });
     });
@@ -295,6 +573,19 @@
       block.classList.add(isCorrect ? 'correct' : 'incorrect');
     }
 
+    // Panning Animation Transition to Next Round Stage
+    function transitionToStage(currentId, nextId) {
+      const currentEl = document.getElementById(currentId);
+      const nextEl = document.getElementById(nextId);
+
+      currentEl.classList.remove('active');
+      currentEl.classList.add('exit-left');
+
+      setTimeout(() => {
+        nextEl.classList.add('active');
+      }, 300);
+    }
+
     function checkRound1() {
       let isQ1 = (getSelectedValue('q1_1') === 'B');
       let isQ2 = (getSelectedValue('q1_2') === 'B');
@@ -305,9 +596,8 @@
         currentStage = 2;
         sendProgressSignal(2, "In Progress");
         setTimeout(() => {
-          document.getElementById('stage1').classList.remove('active');
-          document.getElementById('stage2').classList.add('active');
-        }, 600);
+          transitionToStage('stage1', 'stage2');
+        }, 500);
       }
     }
 
@@ -321,9 +611,8 @@
         currentStage = 3;
         sendProgressSignal(3, "In Progress");
         setTimeout(() => {
-          document.getElementById('stage2').classList.remove('active');
-          document.getElementById('stage3').classList.add('active');
-        }, 600);
+          transitionToStage('stage2', 'stage3');
+        }, 500);
       }
     }
 
